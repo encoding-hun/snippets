@@ -5,30 +5,38 @@ if [[ $SHELL == *bash* ]]; then
 elif [[ $SHELL == *zsh* ]]; then
   shell='zsh'
 else
-  echo "ERROR: Unsupported shell: $shell" >&2
+  printf 'ERROR: Unsupported shell: %s\n' "$shell" >&2
   exit 1
 fi
 
-echo "Updating snippets..."
+printf 'Updating snippets...\n'
 tmpfile=$(mktemp snippets.XXXXXXXXXX)
-curl -s https://cadoth.net/shell_snippets.txt -O "$tmpfile"
+curl -L https://cadoth.net/shell_snippets.txt -o "$tmpfile"
 
 rcfile="$HOME/.${shell}rc"
 snippets_file="$HOME/.${shell}_snippets"
 
+printf '\n'
 if [[ -f "$snippets_file" ]]; then
-  diff --color=always -u "$snippets_file" "$tmpfile"
+  if diff -q "$snippets_file" "$tmpfile" >/dev/null; then
+    printf '\e[32mAlready up to date\e[0m\n'
+  else
+    diff --color=always -u "$snippets_file" "$tmpfile"
+  fi
+else
+  diff --color=always -u "/dev/null" "$tmpfile"
 fi
+printf '\n'
 
+printf 'Saving snippets to %s\n' "$snippets_file"
 mv "$tmpfile" "$snippets_file"
 
 if grep -q -F "$(basename "$snippets_file")" "$rcfile"; then
-  echo "Found existing source line in $rcfile"
+  printf 'Found existing source line in %s\n' "$rcfile"
 else
-  echo "Adding source line to $rcfile"
-  echo "source $snippets_file" >> "$rcfile"
+  printf 'Adding source line to %s\n' "$rcfile"
+  printf 'source %s\n' "$snippets_file" >> "$rcfile"
 fi
 
-echo
-echo "Done! Restart your shell or run:"
-echo "\$ source $shellrc"
+printf '\nDone! Restart your shell or run:\n'
+printf '$ \e[1msource %s\e[0m\n' "$rcfile"
