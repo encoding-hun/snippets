@@ -18,6 +18,7 @@ detect_shell() {
 
 shell=$(cat "/proc/$PPID/comm")
 detect_shell
+printf 'Detected shell as %s\n\n' "$shell"
 
 printf 'Updating snippets...\n'
 tmpfile=$(mktemp snippets.XXXXXXXXXX)
