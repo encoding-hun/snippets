@@ -1,13 +1,23 @@
 #!/bin/bash
 
-if [[ $SHELL == *bash* ]]; then
-  shell='bash'
-elif [[ $SHELL == *zsh* ]]; then
-  shell='zsh'
-else
-  printf 'ERROR: Unsupported shell: %s\n' "$shell" >&2
-  exit 1
-fi
+detect_shell() {
+  if [[ $shell == *bash* ]]; then
+    shell='bash'
+  elif [[ $shell == *zsh* ]]; then
+    shell='zsh'
+  else
+    if [[ "$shell" == "$SHELL" ]]; then
+      printf 'ERROR: Unsupported shell: %s\n' "$shell" >&2
+      exit 1
+    else
+      shell=$SHELL
+      detect_shell
+    fi
+  fi
+}
+
+shell=$(cat "/proc/$PPID/comm")
+detect_shell
 
 printf 'Updating snippets...\n'
 tmpfile=$(mktemp snippets.XXXXXXXXXX)
@@ -20,6 +30,8 @@ printf '\n'
 if [[ -f "$snippets_file" ]]; then
   if diff -q "$snippets_file" "$tmpfile" >/dev/null; then
     printf '\e[32mAlready up to date\e[0m\n'
+    rm -f "$tmpfile"
+    exit
   else
     diff --color=always -u "$snippets_file" "$tmpfile"
   fi
