@@ -11,7 +11,22 @@ isoextract() { for i in "$@"; do 7z x "$i" -o${i%.iso}; done; }
 renamewav() { for i in "$@"; do rename 's/SL/Ls/; s/SR/Rs/; s/BL/Lrs/; s/BR/Rrs/' "$i"; done; }
 
 # sxcu-ra képfeltöltés
-sxcu() { for i in "$@"; do curl -s -F image=@"$i" -F token=token -F noembed=1 https://widevine.is-a.fail/upload | jq -r .url; done; }
+sxcu() {
+  site=${SXCU_SITE:-sxcu.net}
+  token=$SXCU_TOKEN
+
+  while getopts 's:t:' OPTION; do
+    case $OPTION in
+      s) site=$OPTARG;;
+      t) token=$OPTARG;;
+      *) exit 1;;
+    esac
+  done
+
+  for i in "$@"; do
+    curl -s -F "image=@$i" -F "token=$token" -F "noembed=1" "https://$site/upload" | jq -r .url
+  done
+}
 
 # aac kódolás wavból
 # aacenc [input]
