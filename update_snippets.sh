@@ -1,5 +1,6 @@
 #!/bin/bash
 
+shell=$(cat "/proc/$PPID/comm")
 detect_shell() {
   if [[ $shell == *bash* ]]; then
     shell='bash'
@@ -15,8 +16,6 @@ detect_shell() {
     fi
   fi
 }
-
-shell=$(cat "/proc/$PPID/comm")
 detect_shell
 printf 'Detected shell as %s\n\n' "$shell"
 
@@ -31,18 +30,22 @@ printf '\n'
 if [[ -f "$snippets_file" ]]; then
   if diff -q "$snippets_file" "$tmpfile" >/dev/null; then
     printf '\e[32mAlready up to date\e[0m\n'
-    rm -f "$tmpfile"
-    exit
+    needs_source=0
   else
     diff --color=always -u "$snippets_file" "$tmpfile"
+    needs_source=1
   fi
 else
   diff --color=always -u "/dev/null" "$tmpfile"
 fi
 printf '\n'
 
-printf 'Saving snippets to %s\n' "$snippets_file"
-mv "$tmpfile" "$snippets_file"
+if (( needs_source )); then
+  printf 'Saving snippets to %s\n' "$snippets_file"
+  mv "$tmpfile" "$snippets_file"
+else
+  rm -f "$tmpfile"
+fi
 
 if grep -q -F "$(basename "$snippets_file")" "$rcfile"; then
   printf 'Found existing source line in %s\n' "$rcfile"
@@ -51,5 +54,11 @@ else
   printf 'source %s\n' "$snippets_file" >> "$rcfile"
 fi
 
-printf '\nDone! Restart your shell or run:\n'
-printf '$ \e[1msource %s\e[0m\n' "$rcfile"
+printf '\nDone!'
+
+if (( needs_source )); then
+  printf ' Restart your shell or run:\n'
+  printf '$ \e[1msource %s\e[0m\n' "$rcfile"
+else
+  printf '\n'
+fi
