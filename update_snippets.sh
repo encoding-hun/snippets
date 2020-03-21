@@ -11,7 +11,7 @@ fi
 
 printf 'Updating snippets...\n'
 tmpfile=$(mktemp snippets.XXXXXXXXXX)
-curl -L https://cadoth.net/snippets.sh -o "$tmpfile"
+curl -fsSL https://gist.githubusercontent.com/nyuszika7h/26759fadd3505138d6eb5926394ebd02/raw/snippets.sh -o "$tmpfile"
 
 rcfile="$HOME/.${shell}rc"
 snippets_file="$HOME/.${shell}_snippets"
