@@ -26,6 +26,8 @@ curl -fsSL https://gist.githubusercontent.com/nyuszika7h/26759fadd3505138d6eb592
 rcfile="$HOME/.${shell}rc"
 snippets_file="$HOME/.${shell}_snippets"
 
+needs_source=1
+
 printf '\n'
 if [[ -f "$snippets_file" ]]; then
   if diff -q "$snippets_file" "$tmpfile" >/dev/null; then
@@ -33,7 +35,6 @@ if [[ -f "$snippets_file" ]]; then
     needs_source=0
   else
     diff --color=always -u "$snippets_file" "$tmpfile"
-    needs_source=1
   fi
 else
   diff --color=always -u "/dev/null" "$tmpfile"
