@@ -21,10 +21,10 @@ sxcu() {
   token=$SXCU_TOKEN
 
   while getopts 's:t:' OPTION; do
-    case $OPTION in
+    case "$OPTION" in
       s) site=$OPTARG;;
       t) token=$OPTARG;;
-      *) exit 1;;
+      *) return 1;;
     esac
   done
 
