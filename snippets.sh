@@ -134,3 +134,16 @@ fastgrab() {
 fastgrabdir() {
     fastgrab "$(getlinks "$1")"
 }
+
+# ISO-8859-2 (Latin-2) to UTF-8 subtitle conversion, original files will be in the "latin2" folder.
+# ISO-8859-2 (Latin-2) feliratok UTF-8-ra konvertálása, az eredeti fájlok a "latin2" nevű mappában lesznek.
+# latin2toutf8 [input]
+# latin2toutf8 xy.srt / latin2toutf8 *.srt
+latin2toutf8() {
+  mkdir latin2
+  for i in "$@"; do
+    mv "$i" latin2/
+    iconv -f iso-8859-2 -t utf-8 latin2/"$i" -o "$i"
+    done
+  done
+}
