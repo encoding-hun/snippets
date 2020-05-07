@@ -144,6 +144,5 @@ latin2toutf8() {
   for i in "$@"; do
     mv "$i" latin2/
     iconv -f iso-8859-2 -t utf-8 latin2/"$i" -o "$i"
-    done
   done
 }
