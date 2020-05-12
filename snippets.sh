@@ -37,7 +37,15 @@ sxcu() {
 # aac kódolás wavból
 # aacenc [input]
 # aacenc xy.wav / aacenc *wav
-aacenc() { for i in "$@"; do echo qaac64.exe -V 100 --no-delay --ignorelength -o "${i%.*}.m4a" "$i"; done | parallel --no-notice -j4; }
+aacenc() {
+  for i in "$@"; do
+    if [[ $i == *.wav ]]; then
+      echo qaac64.exe -V 100 --no-delay --ignorelength -o "${i%.*}.m4a" "$i"
+    else
+      echo "ffmpeg -i '$i' -f wav - | qaac64.exe -V 100 --no-delay --ignorelength -o '${i%.*}.m4a' -"
+    fi
+  done | parallel --no-notice -j4
+}
 
 # ffmpeg frissítés
 # updating ffmpeg
