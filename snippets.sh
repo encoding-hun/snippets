@@ -86,24 +86,36 @@ avsenc() {
   rm -r x264*mbtree
 }
 
-# extracting 7.1 sounds to mono wav files
-# 7.1 hang szétbontása wav fájlokra
-extract7.1() {
+# extracting sounds to mono wav files
+# hang szétbontása wav fájlokra
+extractmono() {
   (
     command -v emulate >/dev/null && emulate bash
-    
-    channels=(FL FR FC LFE BL BR SL SR)
-    params=(-filter_complex "channelsplit=channel_layout=7.1")
-    for c in "${channels[@]}"; do
-      params[1]+="[$c]"
-    done
 
     for f in "$@"; do
-      for c in "${channels[@]}"; do
-        params+=(-c:a pcm_s24le -map "[$c]" "${f%.*}_${c}.wav")
+      channels_mediainfo=($(mediainfo --Output=JSON "$f" | jq -r '[.media.track[] | select(.["@type"] == "Audio")][0].ChannelLayout'))
+      channels_ffmpeg=($(perl -p -e 's/\b([LRC])\b/F$1/g; s/\b([LR])([bs])\b/\U$2$1/g' <<< "${channels_mediainfo[*]}"))
+      channels_dmp=($(perl -p -e 's/b\b/rs/g' <<< "${channels_mediainfo[*]}"))
+      echo "${channels_mediainfo[@]}"
+      echo "${channels_ffmpeg[@]}"
+      echo "${channels_dmp[@]}"
+      num_channels=${#channels_mediainfo[@]}
+      if [[ " ${channels_mediainfo[*]} " == *' LFE '* ]]; then
+        channel_layout=$(( num_channels - 1 )).1
+      else
+        channel_layout=$num_channels
+      fi
+
+      params=(-filter_complex "channelsplit=channel_layout=$channel_layout")
+      for c in "${channels_ffmpeg[@]}"; do
+        params[1]+="[$c]"
       done
 
-      ffmpeg -i "$f" "${params[@]}"
+      for i in $(seq 0 "$(( num_channels - 1 ))"); do
+        params+=(-c:a pcm_s24le -map "[${channels_ffmpeg[i]}]" "${f%.*}_${channels_dmp[i]}.wav")
+      done
+
+      ffmpeg -guess_layout_max 0 -i "$f" "${params[@]}"
     done
   )
 }
