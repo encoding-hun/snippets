@@ -57,7 +57,9 @@ fi
 
 printf '\nDone!'
 
-if (( needs_source )); then
+if [[ $1 == '--selfupdate' ]]; then
+  printf 'Sourcing %s\n' "$snippets_file"
+elif (( needs_source )); then
   printf ' Restart your shell or run:\n'
   printf '$ \e[1msource %s\e[0m\n' "$rcfile"
 else
