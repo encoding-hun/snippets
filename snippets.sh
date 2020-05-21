@@ -96,9 +96,7 @@ extractmono() {
       channels_mediainfo=($(mediainfo --Output=JSON "$f" | jq -r '[.media.track[] | select(.["@type"] == "Audio")][0].ChannelLayout'))
       channels_ffmpeg=($(perl -p -e 's/\b([LRC])\b/F$1/g; s/\b([LR])([bs])\b/\U$2$1/g' <<< "${channels_mediainfo[*]}"))
       channels_dmp=($(perl -p -e 's/b\b/rs/g' <<< "${channels_mediainfo[*]}"))
-      echo "${channels_mediainfo[@]}"
-      echo "${channels_ffmpeg[@]}"
-      echo "${channels_dmp[@]}"
+
       num_channels=${#channels_mediainfo[@]}
       if [[ " ${channels_mediainfo[*]} " == *' LFE '* ]]; then
         channel_layout=$(( num_channels - 1 )).1
