@@ -1,6 +1,9 @@
 # updating snippets
 # snippetek frissítése
-update_snippets() { curl -fsSL https://gist.githubusercontent.com/nyuszika7h/26759fadd3505138d6eb5926394ebd02/raw/update_snippets.sh | bash -; }
+update_snippets() {
+  file=$(curl -fsSL https://gist.githubusercontent.com/nyuszika7h/26759fadd3505138d6eb5926394ebd02/raw/update_snippets.sh | bash -s - --selfupdate | tee >&2 | tail -1 | cut -d' ' -f2)
+  source "$file"
+}
 
 # renames mkv title to the filename
 # mkv fájlok címét a fájlnévre írja át
