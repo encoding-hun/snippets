@@ -169,3 +169,22 @@ latin2toutf8() {
     iconv -f iso-8859-2 -t utf-8 latin2/"$i" -o "$i"
   done
 }
+
+thumbnailgen() {
+  tilex=4
+  tiley=15
+  width=1600
+  border=0
+  images=$(( tilex * tiley ))
+  [ -d thumb_temp ] || mkdir thumb_temp
+  for x in "$@"; do
+    for i in $(seq -f '%03.0f' 1 "$images"); do
+      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
+      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
+      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
+      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf scale=$(( width / tilex )):-1 "thumb_temp/$i.bmp"
+    done
+    montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" ${x%.*}_thumbnail.png
+  done
+  rm -rf thumb_temp
+}
