@@ -96,26 +96,23 @@ extractmono() {
     command -v emulate >/dev/null && emulate bash
 
     for f in "$@"; do
-      cleanup=0
+      channel_layout=$(ffprobe -v error -show_entries stream=channel_layout -of csv=p=0 "$1" | sed '/^$/d')
 
-      if [[ $f != *.wav ]]; then
-        ffmpeg -hide_banner -i "$f" -map 0:a:0 -c copy "${f%.*}.wav" -y
-        echo
-        f=${f%.*}.wav
-        cleanup=1
+      if [[ $channel_layout == 'unknown' && $f != *.wwav ]]; then
+        wav=${f%.*}.wav
+        ffmpeg -hide_banner -i "$f" -map 0:a:0 "$wav" -y && echo && extractmono "$wav" && rm -f "$wav"
+        continue
       fi
 
-      channels_mediainfo=($(mediainfo --Output=JSON "$f" | jq -r '[.media.track[] | select(.["@type"] == "Audio")][0].ChannelLayout'))
-      channels_ffmpeg=($(perl -p -e 's/\b([LRC])\b/F$1/g; s/\b([LR])([bs])\b/\U$2$1/g' <<< "${channels_mediainfo[*]}"))
-      channels_dmp=($(perl -p -e 's/b\b/rs/g' <<< "${channels_mediainfo[*]}"))
+      channels_ffmpeg=($(ffmpeg -hide_banner -layouts | awk "\$1 == \"${channel_layout}\" { print \$2 }" | tr '+' ' '))
+      channels_dmp=($(sed -r 's/\bF//g; s/\bS([LR])\b/\1s/g; s/\bB([LR])\b/\1rs/g' <<< "${channels_ffmpeg[*]}"))
 
-      echo ${channels_mediainfo[@]}
       echo ${channels_ffmpeg[@]}
       echo ${channels_dmp[@]}
 
-      num_channels=${#channels_mediainfo[@]}
+      num_channels=${#channels_ffmpeg[@]}
 
-      params=(-filter_complex "channelsplit=channel_layout=${channels_ffmpeg[*]// /+}:channels=${channels_ffmpeg[*]// /+}")
+      params=(-filter_complex "channelsplit=channel_layout=${channel_layout}")
       for c in "${channels_ffmpeg[@]}"; do
         params[1]+="[$c]"
       done
@@ -125,7 +122,6 @@ extractmono() {
       done
 
       ffmpeg -hide_banner -i "$f" "${params[@]}" -y
-      (( cleanup )) && rm -f "$f"
     done
   )
 }
