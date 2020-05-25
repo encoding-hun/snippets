@@ -112,7 +112,6 @@ extractmono() {
       done
 
       echo ffmpeg -i "$f" "${params[@]}" -y
-      sleep 1
       ffmpeg -i "$f" "${params[@]}" -y
     done
   )
