@@ -101,13 +101,8 @@ extractmono() {
       channels_dmp=($(perl -p -e 's/b\b/rs/g' <<< "${channels_mediainfo[*]}"))
 
       num_channels=${#channels_mediainfo[@]}
-      if [[ " ${channels_mediainfo[*]} " == *' LFE '* ]]; then
-        channel_layout=$(( num_channels - 1 )).1
-      else
-        channel_layout=$num_channels
-      fi
 
-      params=(-filter_complex "channelsplit=channel_layout=$channel_layout")
+      params=(-filter_complex "channelsplit=channel_layout=${channels_ffmpeg[*]// /+}")
       for c in "${channels_ffmpeg[@]}"; do
         params[1]+="[$c]"
       done
@@ -116,7 +111,9 @@ extractmono() {
         params+=(-c:a pcm_s24le -map "[${channels_ffmpeg[i]}]" "${f%.*}_${channels_dmp[i]}.wav")
       done
 
-      ffmpeg -guess_layout_max 0 -i "$f" "${params[@]}"
+      echo ffmpeg -i "$f" "${params[@]}" -y
+      sleep 1
+      ffmpeg -i "$f" "${params[@]}" -y
     done
   )
 }
@@ -170,6 +167,8 @@ latin2toutf8() {
   done
 }
 
+# generates a 4x15 thumbnail image
+# egy 4x15-ös thumbnailt generál
 thumbnailgen() {
   tilex=4
   tiley=15
@@ -187,4 +186,28 @@ thumbnailgen() {
     montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" ${x%.*}_thumbnail.png
   done
   rm -rf thumb_temp
+}
+
+# extracts chapters from input mpls files
+# kibontja a chaptereket a megadott input mpls fájlokból
+chapterextract() {
+  for i in "$@"; do
+    mkvmerge -o chapter.mks -A -D -S -B -T -M --no-global-tags "$i"
+    mkvextract chapters chapter.mks -s > ${i%.*}.txt
+  done
+  rm chapter.mks
+}
+
+# generates 10 images for each source
+# 10 képet generál minden megadott forráshoz
+imagegen() {
+  images=5
+  for x in "$@"; do
+    for i in $(seq -f '%03.0f' 1 "$images"); do
+      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
+      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
+      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
+      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 ${x%.*}_"$i".png
+    done
+  done
 }
