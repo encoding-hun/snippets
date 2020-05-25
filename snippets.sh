@@ -96,13 +96,26 @@ extractmono() {
     command -v emulate >/dev/null && emulate bash
 
     for f in "$@"; do
+      cleanup=0
+
+      if [[ $f != *.wav ]]; then
+        ffmpeg -hide_banner -i "$f" -map 0:a:0 -c copy "${f%.*}.wav" -y
+        echo
+        f=${f%.*}.wav
+        cleanup=1
+      fi
+
       channels_mediainfo=($(mediainfo --Output=JSON "$f" | jq -r '[.media.track[] | select(.["@type"] == "Audio")][0].ChannelLayout'))
       channels_ffmpeg=($(perl -p -e 's/\b([LRC])\b/F$1/g; s/\b([LR])([bs])\b/\U$2$1/g' <<< "${channels_mediainfo[*]}"))
       channels_dmp=($(perl -p -e 's/b\b/rs/g' <<< "${channels_mediainfo[*]}"))
 
+      echo ${channels_mediainfo[@]}
+      echo ${channels_ffmpeg[@]}
+      echo ${channels_dmp[@]}
+
       num_channels=${#channels_mediainfo[@]}
 
-      params=(-filter_complex "channelsplit=channel_layout=${channels_ffmpeg[*]// /+}")
+      params=(-filter_complex "channelsplit=channel_layout=${channels_ffmpeg[*]// /+}:channels=${channels_ffmpeg[*]// /+}")
       for c in "${channels_ffmpeg[@]}"; do
         params[1]+="[$c]"
       done
@@ -111,8 +124,8 @@ extractmono() {
         params+=(-c:a pcm_s24le -map "[${channels_ffmpeg[i]}]" "${f%.*}_${channels_dmp[i]}.wav")
       done
 
-      echo ffmpeg -i "$f" "${params[@]}" -y
-      ffmpeg -i "$f" "${params[@]}" -y
+      ffmpeg -hide_banner -i "$f" "${params[@]}" -y
+      (( cleanup )) && rm -fv "$f"
     done
   )
 }
