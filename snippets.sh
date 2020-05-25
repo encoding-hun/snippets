@@ -125,7 +125,7 @@ extractmono() {
       done
 
       ffmpeg -hide_banner -i "$f" "${params[@]}" -y
-      (( cleanup )) && rm -fv "$f"
+      (( cleanup )) && rm -f "$f"
     done
   )
 }
