@@ -98,7 +98,7 @@ extractmono() {
     for f in "$@"; do
       channel_layout=$(ffprobe -v error -show_entries stream=channel_layout -of csv=p=0 "$1" | sed '/^$/d')
 
-      if [[ $channel_layout == 'unknown' && $f != *.wwav ]]; then
+      if [[ $channel_layout == 'unknown' && $f != *.wav ]]; then
         wav=${f%.*}.wav
         ffmpeg -hide_banner -i "$f" -map 0:a:0 "$wav" -y && echo && extractmono "$wav" && rm -f "$wav"
         continue
