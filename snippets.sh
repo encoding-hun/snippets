@@ -154,10 +154,25 @@ getlinks () {
 # downloading with aria2c
 # több szálas letöltés aria2c-vel
 fastgrab() {
-  if [[ $1 == *cadoth.net* ]]; then
-    auth=("--http-user=encoding" "--http-passwd=REDACTED")
-  fi
-  aria2c -j 16 -x 16 -s 16 -Z "$@"
+  for url in "$@"; do
+    host=${url#*//}
+    host=${host%%/*}
+
+    if [[ $host != *:*@* ]]; then
+      http_code=$(curl -s -I -o/dev/null -w '%{http_code}' "$url")
+
+      if [[ $http_code == 401 ]]; then
+        printf 'Username for %s: ' "$host"
+        read -r http_user
+        printf 'Password for %s: ' "$host"
+        read -rs http_passwd
+      fi
+    fi
+
+    auth=("--http-user=${http_user}" "--http-passwd=${http_passwd}")
+
+    aria2c -j 16 -x 16 -s 16 -Z "${auth[@]}" "$url"
+  done
 }
 fastgrabdir() {
   fastgrab "$(getlinks "$1")"
