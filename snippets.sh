@@ -221,10 +221,10 @@ chapterextract() {
   rm chapter.mks
 }
 
-# generates 10 images for each source
-# 10 képet generál minden megadott forráshoz
+# generates 12 images for each source
+# 12 képet generál minden megadott forráshoz
 imagegen() {
-  images=5
+  images=12
   for x in "$@"; do
     for i in $(seq -f '%03.0f' 1 "$images"); do
       seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
