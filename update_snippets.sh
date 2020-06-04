@@ -21,7 +21,7 @@ printf 'Detected shell as %s\n\n' "$shell"
 
 printf 'Updating snippets...\n'
 tmpfile=$(mktemp snippets.XXXXXXXXXX)
-curl -fsSL https://gist.githubusercontent.com/nyuszika7h/26759fadd3505138d6eb5926394ebd02/raw/snippets.sh -o "$tmpfile"
+curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/master/snippets.sh -o "$tmpfile"
 
 rcfile="$HOME/.${shell}rc"
 snippets_file="$HOME/.${shell}_snippets"
