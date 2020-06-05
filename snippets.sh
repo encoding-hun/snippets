@@ -271,10 +271,9 @@ Examples:
 EOF
     )
 
-    while getopts ':m:' OPTION; do
+    while getopts ':hm:' OPTION; do
         case "$OPTION" in
             h) echo "$help"; return 0;;
-            m) mode=$OPTARG;;
             m) mode=$OPTARG;;
             *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
         esac
