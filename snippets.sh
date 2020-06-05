@@ -20,29 +20,19 @@ renamewav() { for i in "$@"; do rename 's/SL/Ls/; s/SR/Rs/; s/BL/Lrs/; s/BR/Rrs/
 # uploading to sxcu
 # sxcu-ra képfeltöltés
 sxcu() {
-  help="Usage: sxcu [-s SITE] [-t TOKEN] URL [URL..]"
-
   site=${SXCU_SITE:-sxcu.net}
   token=$SXCU_TOKEN
 
-  while getopts ':hs:t:' OPTION; do
+  while getopts 's:t:' OPTION; do
     case "$OPTION" in
-      h) echo "$help"; return 0;;
       s) site=$OPTARG;;
       t) token=$OPTARG;;
-      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+      *) return 1;;
     esac
   done
 
-  shift $((OPTIND - 1))
-
-  if [[ $# -eq 0 ]]; then
-    echo "$help"
-    return 1
-  fi
-
-  for f in "$@"; do
-    curl -fsS -F "image=@$f" -F "token=$token" -F "noembed=1" "https://$site/upload" | jq -r .url
+  for i in "$@"; do
+    curl -s -F "image=@$i" -F "token=$token" -F "noembed=1" "https://$site/upload" | jq -r .url
   done
 }
 
@@ -200,27 +190,6 @@ latin2toutf8() {
   done
 }
 
-# generates a 4x15 thumbnail image
-# egy 4x15-ös thumbnailt generál
-thumbnailgen() {
-  tilex=4
-  tiley=15
-  width=1600
-  border=0
-  images=$(( tilex * tiley ))
-  [ -d thumb_temp ] || mkdir thumb_temp
-  for x in "$@"; do
-    for i in $(seq -f '%03.0f' 1 "$images"); do
-      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
-      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
-      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
-      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf scale=$(( width / tilex )):-1 "thumb_temp/$i.bmp"
-    done
-    montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" ${x%.*}_thumbnail.png
-  done
-  rm -rf thumb_temp
-}
-
 # extracts chapters from input mpls files
 # kibontja a chaptereket a megadott input mpls fájlokból
 chapterextract() {
@@ -231,16 +200,162 @@ chapterextract() {
   rm chapter.mks
 }
 
+# generates a 4x15 thumbnail image
+# egy 4x15-ös thumbnailt generál
+thumbnailgen() {
+  tilex=4
+  tiley=15
+  width=1600
+  border=0
+  images=$(( tilex * tiley ))
+  mkdir -p thumb_temp
+  for x in "$@"; do
+    b=$(basename $x)
+    for i in $(seq -f '%03.0f' 1 "$images"); do
+      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
+      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
+      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
+      timestamp=$(date -d@${framepos} -u +%H\\:%M\\:%S)
+      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
+      echo -ne Thumbnails: $(bc <<< $i*100/$images)%'\r'
+    done
+    echo -ne Merging images...'\r'
+    montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" ${b%.*}_thumbnail.png
+  done
+  rm -rf thumb_temp
+}
+
 # generates 12 images for each source
 # 12 képet generál minden megadott forráshoz
 imagegen() {
   images=12
   for x in "$@"; do
+    b=$(basename $x)
     for i in $(seq -f '%03.0f' 1 "$images"); do
       seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
       interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
       framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
-      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 ${x%.*}_"$i".png
+      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 ${b%.*}_"$i".png
+      echo -ne Images: $(bc <<< $i*100/$images)%'\r'
     done
   done
+}
+
+dvdtomkv() {
+    help=$(cat <<'EOF'
+Usage: dvdtomkv -m [mode] [input(s)]
+  inputs can be both folders or ISO files.
+
+Options:
+
+  -m [mode]      Sets mode. [series/movie]
+                 In series mode the first title of each source (which is all the episodes in one)
+                 will be skipped. In movie mode all titles of all sources will be remuxed.
+                 (default: series)
+
+Examples:
+
+  dvdtomkv DVD1 DVD2
+  dvdtomkv -maudiostretch -c 6 input.ac3
+  audiostretch -m resample -f 25 -t 24 *.aac
+EOF
+    )
+
+    while getopts ':m:' OPTION; do
+        case "$OPTION" in
+            h) echo "$help"; return 0;;
+            m) mode=$OPTARG;;
+            m) mode=$OPTARG;;
+            *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+        esac
+    done
+
+    if [[ $mode == series ]]; then dvdmode='1'
+    elif [[ $mode == movie ]]; then dvdmode='0'
+    else echo "ERROR: Unsupported DVD mode."; return 1
+    fi
+
+    for x in "$@"; do
+        mkdir -p out/"$x"
+        if [[ $x == *.iso ]]; then
+            title_number=$(makemkvcon info iso:"$x" | grep -E 'Title #.*was added' | wc -l)
+            for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
+                makemkvcon mkv iso:"$x" "$i" out/"$x"
+            done
+        else
+            title_number=$(makemkvcon info iso:"$x" | grep -E 'Title #.*was added' | wc -l)
+            for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
+                makemkvcon mkv file:"$x" "$i" out/"$x"
+            done
+        fi
+    done
+}
+
+audiostretch() {
+    from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
+    help=$(cat <<'EOF'
+Usage: audiostretch [options] [input(s)]
+
+Options:
+
+  -f [from fps]  Sets input file(s)' FPS.
+                 (default: 25)
+
+  -t [to fps]    Sets output file(s)' FPS.
+                 (default: 24000/1001)
+
+  -m [mode]      Sets mode. [tstretch/resample]
+                 tstretch (also called as timestretch, or tempo in sox) stretches
+                 the audio and applies pitch correction so the pitch stays the same.
+                 resample (called as speed in sox) only stretches the audio
+                 without applying pitch correction so the pitch will change.
+                 (default: tstretch)
+
+  -c [channel]   Sets number of channels. [2/6]
+                 2=2.0
+                 6=5.1
+                 (default: 2)
+
+  -j [threads]   Sets number of threads that will be used in order
+                 to parallelize the commands.
+                 (default: 4)
+
+Examples:
+
+  audiostretch input.mp2
+  audiostretch -c 6 input.ac3
+  audiostretch -m resample -f 25 -t 24 *.aac
+EOF
+    )
+
+    while getopts ':hf:t:m:c:j:' OPTION; do
+        case "$OPTION" in
+            h) echo "$help"; return 0;;
+            f) from=$OPTARG;;
+            t) to=$OPTARG;;
+            m) mode=$OPTARG;;
+            c) channel=$OPTARG;;
+            j) threads=$OPTARG;;
+            *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+        esac
+    done
+
+    factor=$(bc <<< "scale=20; ($to)/($from)")
+
+    if [[ $channel == 2 ]]; then outformat='wav'
+    elif [[ $channel == 6 ]]; then outformat='w64'
+    else echo "ERROR: Unsupported channel number."; return 1
+    fi
+
+    if [[ $mode == tstretch ]]; then soxmode='tempo'
+    elif [[ $mode == resample ]]; then soxmode='speed'
+    else echo "ERROR: Unsupported mode."; return 1
+    fi
+
+    shift "$((OPTIND - 1))"
+
+    for i in "$@"; do
+        b=$(basename $i)
+        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
+    done | parallel --no-notice -j "$threads"
 }
