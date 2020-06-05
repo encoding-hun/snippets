@@ -20,19 +20,29 @@ renamewav() { for i in "$@"; do rename 's/SL/Ls/; s/SR/Rs/; s/BL/Lrs/; s/BR/Rrs/
 # uploading to sxcu
 # sxcu-ra képfeltöltés
 sxcu() {
+  help="Usage: sxcu [-s SITE] [-t TOKEN] URL [URL..]"
+
   site=${SXCU_SITE:-sxcu.net}
   token=$SXCU_TOKEN
 
-  while getopts 's:t:' OPTION; do
+  while getopts ':hs:t:' OPTION; do
     case "$OPTION" in
+      h) echo "$help"; return 0;;
       s) site=$OPTARG;;
       t) token=$OPTARG;;
-      *) return 1;;
+      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
     esac
   done
 
-  for i in "$@"; do
-    curl -s -F "image=@$i" -F "token=$token" -F "noembed=1" "https://$site/upload" | jq -r .url
+  shift $((OPTIND - 1))
+
+  if [[ $# -eq 0 ]]; then
+    echo "$help"
+    return 1
+  fi
+
+  for f in "$@"; do
+    curl -fsS -F "image=@$f" -F "token=$token" -F "noembed=1" "https://$site/upload" | jq -r .url
   done
 }
 
