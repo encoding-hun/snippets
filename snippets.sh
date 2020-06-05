@@ -266,8 +266,7 @@ Options:
 Examples:
 
   dvdtomkv DVD1 DVD2
-  dvdtomkv -maudiostretch -c 6 input.ac3
-  audiostretch -m resample -f 25 -t 24 *.aac
+  dvdtomkv *.iso
 EOF
     )
 
