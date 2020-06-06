@@ -364,11 +364,11 @@ EOF
     shift "$((OPTIND - 1))"
 
     for i in "$@"; do
-        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
+        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}'.'${outformat}' ${soxmode} $factor"
     done
 
     for i in "$@"; do
         b=$(basename $i)
-        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
+        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}'.'${outformat}' ${soxmode} $factor"
     done | parallel --no-notice -j "$threads"
 }
