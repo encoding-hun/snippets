@@ -273,7 +273,7 @@ thumbnailgen() {
       framepos=$(bc <<< "scale=4; $interval*$i")
       timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
-      echo -ne "Thumbnails: $(bc <<< "$i*100/$images")%\\r'"
+      echo -ne "Thumbnails: $(bc <<< "$i*100/$images")%\\r"
     done
     echo -ne 'Merging images...\r'
     montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" "${b%.*}_thumbnail.png"
