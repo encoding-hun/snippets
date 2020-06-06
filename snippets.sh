@@ -3,20 +3,23 @@
 # updating snippets
 # snippetek frissítése
 update_snippets() {
+  local file
   file=$(curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/master/update_snippets.sh | bash -s - --selfupdate | tee >&2 | tail -1 | cut -d' ' -f2)
+  # shellcheck disable=SC1090
   source "$file"
 }
 
 # run exe files from WSL without .exe suffix
 # exe fájlok futtatása WSL-ből .exe végződés nélkül
 command_not_found_handle() {
+  local PATHEXT readopt pathext ext command
   if [[ $1 != *.* && -x "$(command -v cmd.exe)" ]]; then
     PATHEXT=$(cmd.exe /c 'echo %PATHEXT%' 2>/dev/null)
 
     [[ -n "$BASH_VERSION" ]] && readopt='-a'
     [[ -n "$ZSH_VERSION" ]] && readopt='-A'
 
-    while IFS=';' read -r "$readopt" pathext; do
+    while IFS=';' read -r "${readopt?}" pathext; do
       for ext in "${pathext[@]}"; do
         if [[ -x "$(command -v "$1$ext")" ]]; then
           command=$1$ext
@@ -34,7 +37,7 @@ command_not_found_handle() {
   elif [[ -x /usr/lib/command-not-found ]]; then
     /usr/lib/command-not-found -- "$1"
   else
-    printf '%s: command not found: %s\n' "${0#-}"
+    printf '%s: command not found: %s\n' "${0#-}" "$1"
     return 127
   fi
 }
@@ -43,19 +46,21 @@ command_not_found_handler() { command_not_found_handle "$@"; }
 
 # renames mkv title to the filename
 # mkv fájlok címét a fájlnévre írja át
-mkvtitles() { for i in "$@"; do mkvpropedit "$i" -e info -s "title=${i%.mkv}"; done; }
+mkvtitles() { local i; for i in "$@"; do mkvpropedit "$i" -e info -s "title=${i%.mkv}"; done; }
 
 # extracting iso file
 # iso fájl kibontása
-isoextract() { for i in "$@"; do 7z x "$i" -o"${i%.iso}"; done; }
+isoextract() { local i; for i in "$@"; do 7z x "$i" -o"${i%.iso}"; done; }
 
 # renames audio files that were demuxed with eac3to to a format that Dolby Media Producer understands
 # eac3to-val demuxolt wavok átnevezése úgy, hogy Dolby Media Producer kezelje
-renamewav() { for i in "$@"; do rename 's/SL/Ls/; s/SR/Rs/; s/BL/Lrs/; s/BR/Rrs/' "$i"; done; }
+renamewav() { local i; for i in "$@"; do rename 's/SL/Ls/; s/SR/Rs/; s/BL/Lrs/; s/BR/Rrs/' "$i"; done; }
 
 # uploading to sxcu
 # sxcu-ra képfeltöltés
 sxcu() {
+  local help site token f
+
   help="Usage: sxcu [-s SITE] [-t TOKEN] URL [URL..]"
 
   site=${SXCU_SITE:-sxcu.net}
@@ -88,7 +93,7 @@ sxcu() {
 # aacenc xy.wav / aacenc *wav
 aacenc() {
   for i in "$@"; do
-    b=$(basename $i)
+    b=$(basename "$i")
     if [[ $i == *.wav ]]; then
       echo qaac64.exe -V 110 --no-delay --ignorelength -o "${i%.*}.m4a" "$i"
     else
@@ -103,18 +108,21 @@ update_ffmpeg() { curl -s 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-am
 
 # spectrogram generation
 # spektrogram készítés
-spec() { for i in "$@"; do sox "$i" -n spectrogram -o "${i%.*}.png"; done; }
+spec() { local i; for i in "$@"; do sox "$i" -n spectrogram -o "${i%.*}.png"; done; }
 
 # AviSynth 2pass encode, the avs script can be written right in the command. The snippet contains settings, you only have to specify settings that you want to overwrite
 # AviSynthes 2pass encode, az avs script magába a parancsba írható. A snippetben benne vannak a beállítások, csak azokat az opciókat kell megadni, amiket szeretnénk felülírni
 # avsenc 'FFMS2("[source]").AutoResize("480")' --bitrate 1800 -- *mkv
 avsenc() {
+  local avs_script x264_opts arg f
+
   avs_script=$1
   shift
 
   x264_opts=(--level 4.1 --preset veryslow --no-fast-pskip --keyint 240
              --colormatrix bt709  --vbv-maxrate 62500 --vbv-bufsize 78125 --merange 32
              --bframes 10 --deblock -3,-3 --qcomp 0.65 --aq-mode 3 --aq-strength 0.8 --psy-rd 1.2 --ipratio 1.3)
+
   for arg in "$@"; do
     if [[ $arg == '--' ]]; then
       shift
@@ -154,9 +162,6 @@ extractmono() {
       channels_ffmpeg=($(ffmpeg -hide_banner -layouts | awk "\$1 == \"${channel_layout}\" { print \$2 }" | tr '+' ' '))
       channels_dmp=($(sed -r 's/\bF//g; s/\bS([LR])\b/\1s/g; s/\bB([LR])\b/\1rs/g' <<< "${channels_ffmpeg[*]}"))
 
-      echo ${channels_ffmpeg[@]}
-      echo ${channels_dmp[@]}
-
       num_channels=${#channels_ffmpeg[@]}
 
       params=(-filter_complex "channelsplit=channel_layout=${channel_layout}")
@@ -176,10 +181,7 @@ extractmono() {
 # extracting links from a link pointing to a directory
 # mappára mutató linkből visszadja a fájlok linkjeit
 getlinks () {
-  local link
-  local auth
-  local auth_param
-  local proto
+  local link auth proto auth_param
 
   link=$1
 
@@ -201,6 +203,7 @@ getlinks () {
 # downloading with aria2c
 # több szálas letöltés aria2c-vel
 fastgrab() {
+  local url host http_code http_user http_passwd auth
   for url in "$@"; do
     host=${url#*//}
     host=${host%%/*}
@@ -230,7 +233,8 @@ fastgrabdir() {
 # latin2toutf8 [input]
 # latin2toutf8 xy.srt / latin2toutf8 *.srt
 latin2toutf8() {
-  mkdir latin2
+  mkdir -p latin2
+  local i
   for i in "$@"; do
     mv "$i" latin2/
     iconv -f iso-8859-2 -t utf-8 latin2/"$i" -o "$i"
@@ -240,9 +244,10 @@ latin2toutf8() {
 # extracts chapters from input mpls files
 # kibontja a chaptereket a megadott input mpls fájlokból
 chapterextract() {
+  local i
   for i in "$@"; do
     mkvmerge -o chapter.mks -A -D -S -B -T -M --no-global-tags "$i"
-    mkvextract chapters chapter.mks -s > ${i%.*}.txt
+    mkvextract chapters chapter.mks -s > "${i%.*}.txt"
   done
   rm chapter.mks
 }
@@ -250,46 +255,56 @@ chapterextract() {
 # generates a 4x15 thumbnail image
 # egy 4x15-ös thumbnailt generál
 thumbnailgen() {
+  local tilex tiley width border images x b i seconds interval framepos timestamp
+
   tilex=4
   tiley=15
   width=1600
   border=0
   images=$(( tilex * tiley ))
+
   mkdir -p thumb_temp
+
   for x in "$@"; do
-    b=$(basename $x)
+    b=$(basename "$x")
     for i in $(seq -f '%03.0f' 1 "$images"); do
-      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
-      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
-      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
-      timestamp=$(date -d@${framepos} -u +%H\\:%M\\:%S)
+      seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+      interval=$(bc <<< "scale=4; $seconds/($images+1)")
+      framepos=$(bc <<< "scale=4; $interval*$i")
+      timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
-      echo -ne Thumbnails: $(bc <<< $i*100/$images)%'\r'
+      echo -ne "Thumbnails: $(bc <<< "$i*100/$images")%\\r'"
     done
-    echo -ne Merging images...'\r'
-    montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" ${b%.*}_thumbnail.png
+    echo -ne 'Merging images...\r'
+    montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" "${b%.*}_thumbnail.png"
   done
+
   rm -rf thumb_temp
 }
 
 # generates 12 images for each source
 # 12 képet generál minden megadott forráshoz
 imagegen() {
+  local images x b i seconds interval framepos
+
   images=12
+
   for x in "$@"; do
-    b=$(basename $x)
+    b=$(basename "$x")
     for i in $(seq -f '%03.0f' 1 "$images"); do
-      seconds=$(ffprobe -i $x -show_format -v quiet | sed -n 's/duration=//p')
-      interval=$(bc <<< 'scale=4; '$seconds'/('$images'+1)')
-      framepos=$(bc <<< 'scale=4; '$interval'*'$i'')
-      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 ${b%.*}_"$i".png
-      echo -ne Images: $(bc <<< $i*100/$images)%'\r'
+      seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+      interval=$(bc <<< "scale=4; $seconds/($images+1)")
+      framepos=$(bc <<< "scale=4; $interval*$i")
+      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 "${b%.*}_$i.png"
+      echo -ne "Images: $(bc <<< "$i*100/$images")%\\r"
     done
   done
 }
 
 dvdtomkv() {
-    help=$(cat <<'EOF'
+  local help mode x i
+
+  help=$(cat <<'EOF'
 Usage: dvdtomkv -m [mode] [input(s)]
   inputs can be both folders or ISO files.
 
@@ -305,40 +320,41 @@ Examples:
   dvdtomkv DVD1 DVD2
   dvdtomkv *.iso
 EOF
-    )
+  )
 
-    while getopts ':hm:' OPTION; do
-        case "$OPTION" in
-            h) echo "$help"; return 0;;
-            m) mode=$OPTARG;;
-            *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
-        esac
-    done
+  while getopts ':hm:' OPTION; do
+    case "$OPTION" in
+      h) echo "$help"; return 0;;
+      m) mode=$OPTARG;;
+      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+    esac
+  done
 
-    if [[ $mode == series ]]; then dvdmode='1'
-    elif [[ $mode == movie ]]; then dvdmode='0'
-    else echo "ERROR: Unsupported DVD mode."; return 1
+  if [[ $mode == series ]]; then dvdmode='1'
+  elif [[ $mode == movie ]]; then dvdmode='0'
+  else echo "ERROR: Unsupported DVD mode."; return 1
+  fi
+
+  for x in "$@"; do
+    mkdir -p out/"$x"
+    if [[ $x == *.iso ]]; then
+      title_number=$(makemkvcon info iso:"$x" | grep -c -E 'Title #.*was added')
+      for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
+        makemkvcon mkv iso:"$x" "$i" out/"$x"
+      done
+    else
+      title_number=$(makemkvcon info iso:"$x" | grep -c -E 'Title #.*was added')
+      for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
+        makemkvcon mkv file:"$x" "$i" out/"$x"
+      done
     fi
-
-    for x in "$@"; do
-        mkdir -p out/"$x"
-        if [[ $x == *.iso ]]; then
-            title_number=$(makemkvcon info iso:"$x" | grep -E 'Title #.*was added' | wc -l)
-            for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
-                makemkvcon mkv iso:"$x" "$i" out/"$x"
-            done
-        else
-            title_number=$(makemkvcon info iso:"$x" | grep -E 'Title #.*was added' | wc -l)
-            for i in $(seq "$dvdmode" "$(( title_number - 1 ))"); do
-                makemkvcon mkv file:"$x" "$i" out/"$x"
-            done
-        fi
-    done
+  done
 }
 
 audiostretch() {
-    from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
-    help=$(cat <<'EOF'
+  local help from to mode channel threads factor i b
+
+  help=$(cat <<'EOF'
 Usage: audiostretch [options] [input(s)]
 
 Options:
@@ -371,41 +387,45 @@ Examples:
   audiostretch -c 6 input.ac3
   audiostretch -m resample -f 25 -t 24 *.aac
 EOF
-    )
+  )
 
-    while getopts ':hf:t:m:c:j:' OPTION; do
-        case "$OPTION" in
-            h) echo "$help"; return 0;;
-            f) from=$OPTARG;;
-            t) to=$OPTARG;;
-            m) mode=$OPTARG;;
-            c) channel=$OPTARG;;
-            j) threads=$OPTARG;;
-            *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
-        esac
-    done
+  from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
 
-    factor=$(bc <<< "scale=20; ($to)/($from)")
+  while getopts ':hf:t:m:c:j:' OPTION; do
+    case "$OPTION" in
+      h) echo "$help"; return 0;;
+      f) from=$OPTARG;;
+      t) to=$OPTARG;;
+      m) mode=$OPTARG;;
+      c) channel=$OPTARG;;
+      j) threads=$OPTARG;;
+      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+    esac
+  done
 
-    if [[ $channel == 2 ]]; then outformat='wav'
-    elif [[ $channel == 6 ]]; then outformat='w64'
-    else echo "ERROR: Unsupported channel number."; return 1
-    fi
+  local factor
+  factor=$(bc <<< "scale=20; ($to)/($from)")
 
-    if [[ $mode == tstretch ]]; then soxmode='tempo'
-    elif [[ $mode == resample ]]; then soxmode='speed'
-    else echo "ERROR: Unsupported mode."; return 1
-    fi
+  if [[ $channel == 2 ]]; then outformat='wav'
+  elif [[ $channel == 6 ]]; then outformat='w64'
+  else echo "ERROR: Unsupported channel number."; return 1
+  fi
 
-    shift "$((OPTIND - 1))"
+  if [[ $mode == tstretch ]]; then soxmode='tempo'
+  elif [[ $mode == resample ]]; then soxmode='speed'
+  else echo "ERROR: Unsupported mode."; return 1
+  fi
 
-    for i in "$@"; do
-        b=$(basename $i)
-        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
-    done
+  shift "$((OPTIND - 1))"
 
-    for i in "$@"; do
-        b=$(basename $i)
-        echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
-    done | parallel --no-notice -j "$threads"
+  local i b
+  for i in "$@"; do
+    b=$(basename "$i")
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
+  done
+
+  for i in "$@"; do
+    b=$(basename "$i")
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
+  done | parallel --no-notice -j "$threads"
 }
