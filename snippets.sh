@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # updating snippets
 # snippetek frissítése
 update_snippets() {
