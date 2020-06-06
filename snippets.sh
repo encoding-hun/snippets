@@ -7,6 +7,40 @@ update_snippets() {
   source "$file"
 }
 
+# run exe files from WSL without .exe suffix
+# exe fájlok futtatása WSL-ből .exe végződés nélkül
+command_not_found_handle() {
+  if [[ $1 != *.* && -x "$(command -v cmd.exe)" ]]; then
+    PATHEXT=$(cmd.exe /c 'echo %PATHEXT%' 2>/dev/null)
+
+    [[ -n "$BASH_VERSION" ]] && readopt='-a'
+    [[ -n "$ZSH_VERSION" ]] && readopt='-A'
+
+    while IFS=';' read -r "$readopt" pathext; do
+      for ext in "${pathext[@]}"; do
+        if [[ -x "$(command -v "$1$ext")" ]]; then
+          command=$1$ext
+          break
+        fi
+      done
+    done <<< "$PATHEXT"
+  fi
+
+  if [[ -n "$command" ]]; then
+    shift
+    "$command" "$@"
+  elif [[ -x /usr/share/command-not-found/command-not-found ]]; then
+    /usr/share/command-not-found/command-not-found -- "$1"
+  elif [[ -x /usr/lib/command-not-found ]]; then
+    /usr/lib/command-not-found -- "$1"
+  else
+    printf '%s: command not found: %s\n' "${0#-}"
+    return 127
+  fi
+}
+
+command_not_found_handler() { command_not_found_handle "$@"; }
+
 # renames mkv title to the filename
 # mkv fájlok címét a fájlnévre írja át
 mkvtitles() { for i in "$@"; do mkvpropedit "$i" -e info -s "title=${i%.mkv}"; done; }
