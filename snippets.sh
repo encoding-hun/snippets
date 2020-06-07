@@ -204,25 +204,26 @@ getlinks () {
 # több szálas letöltés aria2c-vel
 fastgrab() {
   local url host http_code http_user http_passwd auth
-  for url in "$@"; do
-    host=${url#*//}
-    host=${host%%/*}
 
-    if [[ $host != *:*@* ]]; then
-      http_code=$(curl -s -I -o/dev/null -w '%{http_code}' "$url")
+  url="$1"
 
-      if [[ $http_code == 401 ]]; then
-        printf 'Username for %s: ' "$host"
-        read -r http_user
-        printf 'Password for %s: ' "$host"
-        read -rs http_passwd
-      fi
+  host=${url#*//}
+  host=${host%%/*}
+
+  if [[ $host != *:*@* ]]; then
+    http_code=$(curl -s -I -o/dev/null -w '%{http_code}' "$url")
+
+    if [[ $http_code == 401 ]]; then
+      printf 'Username for %s: ' "$host"
+      read -r http_user
+      printf 'Password for %s: ' "$host"
+      read -rs http_passwd
     fi
+  fi
 
-    auth=("--http-user=${http_user}" "--http-passwd=${http_passwd}")
+  auth=("--http-user=${http_user}" "--http-passwd=${http_passwd}")
 
-    aria2c -j 16 -x 16 -s 16 -Z "${auth[@]}" "$url"
-  done
+  aria2c --auto-file-renaming=false --allow-overwrite=true -j 16 -x 16 -s 16 -Z "${auth[@]}" "$@"
 }
 fastgrabdir() {
   # shellcheck disable=SC2046
