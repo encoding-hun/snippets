@@ -429,3 +429,7 @@ EOF
     echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
   done | parallel --no-notice -j "$threads"
 }
+
+update_p10k() {
+  git -C $__p9k_root_dir pull && exec zsh
+}
