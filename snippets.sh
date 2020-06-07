@@ -197,7 +197,7 @@ getlinks () {
     auth_param=("-auth=$auth")
   fi
 
-  lynx "${auth_param[@]}" -hiddenlinks=ignore -listonly -nonumbers -dump "$link" | grep -Ev '\?|/$'
+  lynx "${auth_param[@]}" -hiddenlinks=ignore -listonly -nonumbers -dump "$link" | grep -Ev '\?|/$' | sed -r 's/ /%20/g'
 }
 
 # downloading with aria2c
