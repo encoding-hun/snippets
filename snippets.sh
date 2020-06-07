@@ -225,7 +225,8 @@ fastgrab() {
   done
 }
 fastgrabdir() {
-  fastgrab "$(getlinks "$1")"
+  # shellcheck disable=SC2046
+  fastgrab $(getlinks "$1")
 }
 
 # ISO-8859-2 (Latin-2) to UTF-8 subtitle conversion, original files will be in the "latin2" folder.
