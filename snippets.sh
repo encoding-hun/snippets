@@ -12,7 +12,7 @@ update_snippets() {
 # run exe files from WSL without .exe suffix
 # exe fájlok futtatása WSL-ből .exe végződés nélkül
 command_not_found_handle() {
-  local PATHEXT readopt pathext ext command
+  local PATHEXT readopt pathext ext command shell
   if [[ $1 != *.* && -x "$(command -v cmd.exe)" ]]; then
     PATHEXT=$(cmd.exe /c 'echo %PATHEXT%' 2>/dev/null)
 
@@ -37,7 +37,9 @@ command_not_found_handle() {
   elif [[ -x /usr/lib/command-not-found ]]; then
     /usr/lib/command-not-found -- "$1"
   else
-    printf '%s: command not found: %s\n' "${SHELL##*/}" "$1"
+    [[ -n "$BASH_ARGV0" ]] && shell=${BASH_ARGV0#-}
+    [[ -n "$ZSH_ARGZERO" ]] && shell=${ZSH_ARGZERO#-}
+    printf '%s: command not found: %s\n' "$shell" "$1"
     return 127
   fi
 }
