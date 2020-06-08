@@ -37,7 +37,7 @@ command_not_found_handle() {
   elif [[ -x /usr/lib/command-not-found ]]; then
     /usr/lib/command-not-found -- "$1"
   else
-    printf '%s: command not found: %s\n' "${0#-}" "$1"
+    printf '%s: command not found: %s\n' "${SHELL##*/}" "$1"
     return 127
   fi
 }
