@@ -443,8 +443,8 @@ update_p10k() {
 
 downmix() {
   local i
-  b=$(basename "$i")
   for i in "$@"; do
+    b=$(basename "$i")
     ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 ${b%.*}.wav
   done
 }
