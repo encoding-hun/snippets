@@ -106,7 +106,9 @@ aacenc() {
 
 # ffmpeg frissítés
 # updating ffmpeg
-update_ffmpeg() { curl -s 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -xJf - && sudo cp ffmpeg-git-*-amd64-static/{ffmpeg,ffprobe} /usr/local/bin && rm -rf ffmpeg-git-*-amd64-static; }
+update_ffmpeg() {
+  sudo curl -\# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | sudo tar -C /usr/local/bin -xvJf - --wildcards '*/ffmpeg' '*/ffprobe'; return
+}
 
 # spectrogram generation
 # spektrogram készítés
