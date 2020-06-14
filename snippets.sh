@@ -444,7 +444,7 @@ update_p10k() {
 downmix() {
   local i
   for i in "$@"; do
-    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=0 ${i%.*}.wav
+    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 ${i%.*}.wav
   done
 }
 
