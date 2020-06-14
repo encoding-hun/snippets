@@ -448,4 +448,4 @@ downmix() {
   done
 }
 
-forcedfind() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
+findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
