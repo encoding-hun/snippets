@@ -94,6 +94,7 @@ sxcu() {
 # aacenc [input]
 # aacenc xy.wav / aacenc *wav
 aacenc() {
+  local i b 
   for i in "$@"; do
     b=$(basename "$i")
     if [[ $i == *.wav ]]; then
@@ -439,3 +440,12 @@ EOF
 update_p10k() {
   git -C $__p9k_root_dir pull && exec zsh
 }
+
+downmix() {
+  local i
+  for i in "$@"; do
+    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=0 ${i%.*}.wav
+  done
+}
+
+forcedfind() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
