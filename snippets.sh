@@ -449,4 +449,4 @@ downmix() {
 
 findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
 
-getdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
+grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
