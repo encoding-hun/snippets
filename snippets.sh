@@ -410,7 +410,6 @@ EOF
     esac
   done
 
-  local factor
   factor=$(bc <<< "scale=20; ($to)/($from)")
 
   if [[ $channel == 2 ]]; then outformat='wav'
@@ -425,7 +424,6 @@ EOF
 
   shift "$((OPTIND - 1))"
 
-  local i b
   for i in "$@"; do
     b=$(basename "$i")
     echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
@@ -450,3 +448,5 @@ downmix() {
 }
 
 findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
+
+getdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
