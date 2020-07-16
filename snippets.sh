@@ -450,3 +450,9 @@ downmix() {
 findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
 
 grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
+
+keksh() {
+  local keksh_filename
+    keksh_filename=$(curl -s https://kek.sh/api/v1/posts -F file=@"$@" | grep -o -P '(?<=filename\"\:\").*(?=\"\,\"token)')
+    echo https://i.kek.sh/"$keksh_filename"
+}
