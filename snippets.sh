@@ -111,9 +111,45 @@ update_ffmpeg() {
   sudo sh -c "curl -\# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --wildcards '*/ffmpeg' '*/ffprobe'"
 }
 
-# spectrogram generation
-# spektrogram készítés
-spec() { local i; for i in "$@"; do sox "$i" -n spectrogram -o "${i%.*}.png"; done; }
+spectest() {
+  local help channel x b
+
+  help=$(cat <<'EOF'
+Usage: spec -c [channel] [input(s)]
+  inputs can be any audio file
+  (they will be decoded with ffmpeg)
+
+Options:
+  -c [channel]   Sets number of channels. [2/6]
+
+Examples:
+  spec *wav
+  spec -c 6 input.ac3
+EOF
+  )
+  channel=2
+  while getopts ':hc:' OPTION; do
+    case "$OPTION" in
+      h) echo "$help"; return 0;;
+      c) channel=$OPTARG;;
+      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+    esac
+  done
+  shift "$((OPTIND - 1))"
+
+  if [[ $channel != 6 && $channel != 2 ]]; then
+    echo "ERROR: Unsupported channel number."; return 1
+  fi
+
+  for x in "$@"; do
+    b=$(basename "$x")
+    echo "$b":
+    ffmpeg -y -loglevel panic -i "$x" -ac "$channel" spec_temp.w64
+    sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o spec_temp.png
+    sxcu spec_temp.png
+  done
+  rm spec_temp.*
+}
 
 # AviSynth 2pass encode, the avs script can be written right in the command. The snippet contains settings, you only have to specify settings that you want to overwrite
 # AviSynthes 2pass encode, az avs script magába a parancsba írható. A snippetben benne vannak a beállítások, csak azokat az opciókat kell megadni, amiket szeretnénk felülírni
