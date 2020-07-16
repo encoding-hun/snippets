@@ -111,7 +111,7 @@ update_ffmpeg() {
   sudo sh -c "curl -\# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --wildcards '*/ffmpeg' '*/ffprobe'"
 }
 
-spectest() {
+spec() {
   local help channel x b
 
   help=$(cat <<'EOF'
