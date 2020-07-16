@@ -145,10 +145,10 @@ EOF
     b=$(basename "$x")
     echo "$b":
     ffmpeg -y -loglevel panic -i "$x" -ac "$channel" spec_temp.w64
-    sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o spec_temp.png
-    sxcu spec_temp.png
+    sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
+    keksh "${b%.*}.png"
   done
-  rm spec_temp.*
+  rm spec_temp.w64
 }
 
 # AviSynth 2pass encode, the avs script can be written right in the command. The snippet contains settings, you only have to specify settings that you want to overwrite
