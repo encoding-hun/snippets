@@ -379,6 +379,8 @@ EOF
     esac
   done
 
+  shift "$((OPTIND - 1))"
+
   if [[ $mode == series ]]; then dvdmode='1'
   elif [[ $mode == movie ]]; then dvdmode='0'
   else echo "ERROR: Unsupported DVD mode." >&2; return 1
@@ -451,6 +453,8 @@ EOF
       *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
+
+  shift "$((OPTIND - 1))"
 
   factor=$(bc <<< "scale=20; ($to)/($from)")
 
