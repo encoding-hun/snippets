@@ -77,7 +77,7 @@ sxcu() {
     esac
   done
 
-  shift $((OPTIND - 1))
+  shift "$((OPTIND - 1))"
 
   if [[ $# -eq 0 ]]; then
     echo "$help"
@@ -108,7 +108,7 @@ aacenc() {
 # ffmpeg frissítés
 # updating ffmpeg
 update_ffmpeg() {
-  sudo sh -c "curl -\# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --wildcards '*/ffmpeg' '*/ffprobe'"
+  sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --wildcards '*/ffmpeg' '*/ffprobe'"
 }
 
 spec() {
@@ -143,7 +143,7 @@ EOF
 
   for x in "$@"; do
     b=$(basename "$x")
-    echo -e "$b: \c"
+    echo -n "$b: "
     ffmpeg -y -loglevel panic -i "$x" -ac "$channel" spec_temp.w64
     sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     keksh "${b%.*}.png"
@@ -200,8 +200,13 @@ extractmono() {
         continue
       fi
 
-      channels_ffmpeg=($(ffmpeg -hide_banner -layouts | awk "\$1 == \"${channel_layout}\" { print \$2 }" | tr '+' ' '))
-      channels_dmp=($(sed -r 's/\bF//g; s/\bS([LR])\b/\1s/g; s/\bB([LR])\b/\1rs/g' <<< "${channels_ffmpeg[*]}"))
+      [[ -n "$BASH_VERSION" ]] && readopt='-a'
+      [[ -n "$ZSH_VERSION" ]] && readopt='-A'
+
+      while read -r "${readopt?}" channel; do
+        channels_ffmpeg+=("$channel")
+        channels_dmp+=("$(sed -r 's/^F//g; s/^S([LR])$/\1s/g; s/^B([LR])$/\1rs/g' <<< "$channel")")
+      done < <(ffmpeg -hide_banner -layouts | awk "\$1 == \"${channel_layout}\" { print \$2 }" | tr '+' ' ')
 
       num_channels=${#channels_ffmpeg[@]}
 
@@ -485,7 +490,7 @@ downmix() {
   local i
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 ${b%.*}.wav
+    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 "${b%.*}.wav"
   done
 }
 
