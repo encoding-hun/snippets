@@ -472,7 +472,13 @@ EOF
 }
 
 update_p10k() {
-  git -C $__p9k_root_dir pull && exec zsh
+  # shellcheck disable=SC2154
+  if [[ -n "$__p9k_root_dir" ]]; then
+    git -C "$__p9k_root_dir" pull && exec zsh
+  else
+    echo "ERROR: powerlevel10k not found" >&2
+    return 1
+  fi
 }
 
 downmix() {
