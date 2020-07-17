@@ -73,7 +73,7 @@ sxcu() {
       h) echo "$help"; return 0;;
       s) site=$OPTARG;;
       t) token=$OPTARG;;
-      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+      *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
 
@@ -132,13 +132,14 @@ EOF
     case "$OPTION" in
       h) echo "$help"; return 0;;
       c) channel=$OPTARG;;
-      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+      *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
+
   shift "$((OPTIND - 1))"
 
   if [[ $channel != 6 && $channel != 2 ]]; then
-    echo "ERROR: Unsupported channel number."; return 1
+    echo "ERROR: Unsupported channel number." >&2; return 1
   fi
 
   for x in "$@"; do
@@ -374,13 +375,13 @@ EOF
     case "$OPTION" in
       h) echo "$help"; return 0;;
       m) mode=$OPTARG;;
-      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+      *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
 
   if [[ $mode == series ]]; then dvdmode='1'
   elif [[ $mode == movie ]]; then dvdmode='0'
-  else echo "ERROR: Unsupported DVD mode."; return 1
+  else echo "ERROR: Unsupported DVD mode." >&2; return 1
   fi
 
   for x in "$@"; do
@@ -447,7 +448,7 @@ EOF
       m) mode=$OPTARG;;
       c) channel=$OPTARG;;
       j) threads=$OPTARG;;
-      *) echo "ERROR: Invalid option: -$OPTARG"; return 1;;
+      *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
 
@@ -455,12 +456,12 @@ EOF
 
   if [[ $channel == 2 ]]; then outformat='wav'
   elif [[ $channel == 6 ]]; then outformat='w64'
-  else echo "ERROR: Unsupported channel number."; return 1
+  else echo "ERROR: Unsupported channel number." >&2; return 1
   fi
 
   if [[ $mode == tstretch ]]; then soxmode='tempo'
   elif [[ $mode == resample ]]; then soxmode='speed'
-  else echo "ERROR: Unsupported mode."; return 1
+  else echo "ERROR: Unsupported mode." >&2; return 1
   fi
 
   shift "$((OPTIND - 1))"
