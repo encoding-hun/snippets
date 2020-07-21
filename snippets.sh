@@ -503,6 +503,6 @@ grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --co
 
 keksh() {
   for f in "$@"; do
-    curl -fsSL https://kek.sh/api/v1/posts -F file="$f" | jq -r '"https://i.kek.sh/\(.filename)"'
+    curl -fsSL https://kek.sh/api/v1/posts -F file="@$f" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
 }
