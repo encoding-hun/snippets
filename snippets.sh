@@ -468,8 +468,6 @@ EOF
   else echo "ERROR: Unsupported mode." >&2; return 1
   fi
 
-  shift "$((OPTIND - 1))"
-
   for i in "$@"; do
     b=$(basename "$i")
     echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}.${outformat}' ${soxmode} $factor"
