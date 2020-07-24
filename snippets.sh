@@ -303,7 +303,7 @@ chapterextract() {
 
 # generates a 4x15 thumbnail image
 # egy 4x15-ös thumbnailt generál
-thumbnailgentest() {
+thumbnailgen() {
   local tilex tiley width border images x b i c seconds interval framepos timestamp
 
   tilex=4
@@ -334,7 +334,7 @@ thumbnailgentest() {
 
 # generates 12 images for each source
 # 12 képet generál minden megadott forráshoz
-imagegentest() {
+imagegen() {
   local images x b i c seconds interval framepos
 
   images=12
