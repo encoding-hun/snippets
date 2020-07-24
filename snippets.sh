@@ -316,18 +316,18 @@ thumbnailgen() {
 
   for x in "$@"; do
     b=$(basename "$x")
+	printf '\r%s\n' "$b"
+    seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+    interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
-      seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
-      interval=$(bc <<< "scale=4; $seconds/($images+1)")
       framepos=$(bc <<< "scale=4; $interval*$i")
       timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
-      echo -ne "Thumbnails: $(bc <<< "$i*100/$images")%\\r"
+      printf '\rThumbnails: %02d%%' "$(bc <<< "$i*100/$images")"
     done
-    echo -ne 'Merging images...\r'
     montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" "${b%.*}_thumbnail.png"
   done
-
+  printf '\n'
   rm -rf thumb_temp
 }
 
@@ -340,14 +340,16 @@ imagegen() {
 
   for x in "$@"; do
     b=$(basename "$x")
+    printf '\r%s\n' "$b"
+    seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+    interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
-      seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
-      interval=$(bc <<< "scale=4; $seconds/($images+1)")
       framepos=$(bc <<< "scale=4; $interval*$i")
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 "${b%.*}_$i.png"
-      echo -ne "Images: $(bc <<< "$i*100/$images")%\\r"
+      printf '\rImages: %02d%%' "$(bc <<< "$i*100/$images")"
     done
   done
+  printf '\n'
 }
 
 dvdtomkv() {
