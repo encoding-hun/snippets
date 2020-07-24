@@ -316,7 +316,7 @@ thumbnailgen() {
 
   for x in "$@"; do
     b=$(basename "$x")
-	printf '\r%s\n' "$b"
+    printf '\r%s\n' "$b"
     seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
