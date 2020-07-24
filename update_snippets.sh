@@ -20,7 +20,7 @@ detect_shell
 printf 'Detected shell as %s\n\n' "$shell"
 
 printf 'Updating snippets...\n'
-tmpfile=$(mktemp snippets.XXXXXXXXXX)
+tmpfile=$(mktemp "${TMPDIR:-/tmp}/snippets.XXXXXXXXXX")
 curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/master/snippets.sh -o "$tmpfile"
 
 rcfile="$HOME/.${shell}rc"
