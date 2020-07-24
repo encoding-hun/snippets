@@ -506,3 +506,11 @@ keksh() {
     curl -fsSL https://kek.sh/api/v1/posts -F file="@$f" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
 }
+
+update_ncup() {
+  install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
+}
+
+update_ncup_conf() {
+  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
+}
