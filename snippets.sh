@@ -330,7 +330,7 @@ thumbnailgen() {
   printf '\n'
   rm -rf thumb_temp
 }
-
+a
 # generates 12 images for each source
 # 12 képet generál minden megadott forráshoz
 imagegen() {
