@@ -303,8 +303,8 @@ chapterextract() {
 
 # generates a 4x15 thumbnail image
 # egy 4x15-ös thumbnailt generál
-thumbnailgen() {
-  local tilex tiley width border images x b i seconds interval framepos timestamp
+thumbnailgentest() {
+  local tilex tiley width border images x b i c seconds interval framepos timestamp
 
   tilex=4
   tiley=15
@@ -323,7 +323,8 @@ thumbnailgen() {
       framepos=$(bc <<< "scale=4; $interval*$i")
       timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
-      printf '\rThumbnails: %02d%%' "$(bc <<< "$i*100/$images")"
+	  (( c++ ))
+      printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
     montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" "${b%.*}_thumbnail.png"
   done
@@ -333,20 +334,21 @@ thumbnailgen() {
 
 # generates 12 images for each source
 # 12 képet generál minden megadott forráshoz
-imagegen() {
-  local images x b i seconds interval framepos
+imagegentest() {
+  local images x b i c seconds interval framepos
 
   images=12
 
   for x in "$@"; do
     b=$(basename "$x")
     printf '\r%s\n' "$b"
-    seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+	seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
       framepos=$(bc <<< "scale=4; $interval*$i")
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 "${b%.*}_$i.png"
-      printf '\rImages: %02d%%' "$(bc <<< "$i*100/$images")"
+	  (( c++ ))
+	  printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
   done
   printf '\n'
