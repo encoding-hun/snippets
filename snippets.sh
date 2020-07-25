@@ -348,7 +348,7 @@ imagegen() {
       framepos=$(bc <<< "scale=4; $interval*$i")
       ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 "${b%.*}_$i.png"
 	  (( c++ ))
-	  printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
+	  printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
   done
   printf '\n'
