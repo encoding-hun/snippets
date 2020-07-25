@@ -94,7 +94,7 @@ sxcu() {
 # aacenc [input]
 # aacenc xy.wav / aacenc *wav
 aacenc() {
-  local i b 
+  local i b
   for i in "$@"; do
     b=$(basename "$i")
     if [[ $i == *.wav ]]; then
