@@ -506,15 +506,18 @@ findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
 grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
 
 keksh() {
+  local f
   for f in "$@"; do
     curl -fsSL https://kek.sh/api/v1/posts -F file="@$f" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
 }
 
-update_ncup() {
-  install -D -m 755 <(curl -fsSL https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.sh) ~/.local/bin/ncup && hash -r
-}
-
-update_ncup_conf() {
-  curl "https://raw.githubusercontent.com/pcroland/ncoreupload/master/ncup.conf" --create-dirs -o ~/.ncup/ncup.conf -s
+x0() {
+  local i
+  for i in "$@"; do
+    b=$(basename "$i")
+    printf '%s: ' "$b"
+    curl -F "file=@${i}" "https://x0.at"
+    printf '\n'
+  done
 }
