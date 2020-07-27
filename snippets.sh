@@ -145,7 +145,7 @@ EOF
   for x in "$@"; do
     b=$(basename "$x")
     echo -n "$b: "
-    ffmpeg -y -loglevel panic -i "$x" -ac "$channel" spec_temp.w64
+    ffmpeg -y -loglevel warning -i "$x" -ac "$channel" spec_temp.w64
     sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     keksh "${b%.*}.png"
   done
