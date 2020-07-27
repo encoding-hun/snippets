@@ -317,12 +317,12 @@ thumbnailgen() {
   for x in "$@"; do
     b=$(basename "$x")
     printf '\r%s\n' "$b"
-    seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+    seconds=$(ffprobe "$x" -v quiet -print_format json -show_format | jq -r '.format.duration')
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
       framepos=$(bc <<< "scale=4; $interval*$i")
       timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
-      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
+      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
 	  (( c++ ))
       printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
@@ -342,13 +342,13 @@ imagegen() {
   for x in "$@"; do
     b=$(basename "$x")
     printf '\r%s\n' "$b"
-	seconds=$(ffprobe -i "$x" -show_format -v quiet | sed -n 's/duration=//p')
+    seconds=$(ffprobe "$x" -v quiet -print_format json -show_format | jq -r '.format.duration')
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
       framepos=$(bc <<< "scale=4; $interval*$i")
-      ffmpeg -y -loglevel panic -ss "$framepos" -i "$x" -vframes 1 "${b%.*}_$i.png"
-	  (( c++ ))
-	  printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
+      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 "${b%.*}_$i.png"
+      (( c++ ))
+	    printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
   done
   printf '\n'
