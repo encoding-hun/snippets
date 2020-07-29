@@ -282,7 +282,6 @@ fastgrabdir() {
 # latin2toutf8 [input]
 # latin2toutf8 xy.srt / latin2toutf8 *.srt
 latin2toutf8() {
-  mkdir -p latin2
   local i
   mkdir -p utf8
   for i in "$@"; do
