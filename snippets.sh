@@ -284,9 +284,9 @@ fastgrabdir() {
 latin2toutf8() {
   mkdir -p latin2
   local i
+  mkdir -p utf8
   for i in "$@"; do
-    mv "$i" latin2/
-    iconv -f iso-8859-2 -t utf-8 latin2/"$i" -o "$i"
+    iconv -f iso-8859-2 -t utf-8 "$i" -o utf8/"$i"
   done
 }
 
