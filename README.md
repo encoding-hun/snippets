@@ -7,7 +7,7 @@ If this is not the case, or you have any suggestions, please open an issue.
 
 ## Installation
 ```sh
-curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/master/update_snippets.sh | bash -
+curl -fsSL git.io/JJDtd | bash -
 ```
 
 ## Updating
