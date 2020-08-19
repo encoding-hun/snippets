@@ -256,10 +256,8 @@ latin2toutf8() {
   local i
   mkdir -p utf8
   for i in "$@"; do
-    printf '\r%s' "$(basename "$i")"
     iconv -f iso-8859-2 -t utf-8 "$i" -o utf8/"$i"
   done
-  printf '\n'
 }
 
 # UTF-8 to ISO-8859-2 (Latin-2) subtitle conversion, converted files will be in the "latin2" folder.
@@ -270,10 +268,8 @@ utf8tolatin2() {
   local i
   mkdir -p latin2
   for i in "$@"; do
-    printf '\r%s' "$(basename "$i")"
     iconv -f utf-8 -t iso-8859-2 "$i" -o latin2/"$i"
   done
-  printf '\n'
 }
 
 # extracts chapters from input mpls files
