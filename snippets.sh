@@ -256,7 +256,7 @@ latin2toutf8() {
   local i
   mkdir -p utf8
   for i in "$@"; do
-    printf "$(basename "$i")"
+    printf '\r' "$(basename "$i")"
     iconv -f iso-8859-2 -t utf-8 "$i" -o utf8/"$i"
   done
   printf '\n'
@@ -270,7 +270,7 @@ utf8tolatin2() {
   local i
   mkdir -p latin2
   for i in "$@"; do
-    printf "$(basename "$i")"
+    printf '\r' "$(basename "$i")"
     iconv -f utf-8 -t iso-8859-2 "$i" -o latin2/"$i"
   done
   printf '\n'
