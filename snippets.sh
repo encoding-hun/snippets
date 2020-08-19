@@ -260,6 +260,18 @@ latin2toutf8() {
   done
 }
 
+# UTF-8 to ISO-8859-2 (Latin-2) subtitle conversion, converted files will be in the "latin2" folder.
+# UTF-8 feliratok ISO-8859-2-re (Latin-2) konvertálása, a konvertált fájlok az "latin2" mappában lesznek.
+# utf8tolatin2 [input]
+# utf8tolatin2 xy.srt / latin2toutf8 *.srt
+utf8tolatin2() {
+  local i
+  mkdir -p latin2
+  for i in "$@"; do
+    iconv -f utf-8 -t iso-8859-2 "$i" -o latin2/"$i"
+  done
+}
+
 # extracts chapters from input mpls files
 # kibontja a chaptereket a megadott input mpls fájlokból
 chapterextract() {
