@@ -503,3 +503,5 @@ x0() {
     printf '\n'
   done
 }
+
+createsample() { mkvmerge -o sample.mkv --title sample --split parts:00:05:00-00:06:30 "$1"; }
