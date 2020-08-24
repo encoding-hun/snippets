@@ -504,4 +504,4 @@ x0() {
   done
 }
 
-createsample() { mkvmerge -o sample.mkv --title sample --split parts:00:05:00-00:06:30 "$1"; }
+createsample() { mkvmerge -o sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$1"; }
