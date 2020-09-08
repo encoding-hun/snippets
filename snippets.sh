@@ -79,7 +79,13 @@ aacenc() {
 # ffmpeg frissítés
 # updating ffmpeg
 update_ffmpeg() {
-  sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
+  type=${1:-release} # release, git
+  if [[ $type == 'release' ]]; then
+    dir='releases'
+  else
+    dir='builds'
+  fi
+  sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
 }
 
 spec() {
