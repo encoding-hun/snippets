@@ -424,6 +424,8 @@ Options:
                  to parallelize the commands.
                  (default: 4)
 
+  -k             Keep original sample rate.
+
 Examples:
 
   audiostretch input.mp2
@@ -434,7 +436,7 @@ EOF
 
   from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
 
-  while getopts ':hf:t:m:c:j:' OPTION; do
+  while getopts ':hf:t:m:c:j:s:' OPTION; do
     case "$OPTION" in
       h) echo "$help"; return 0;;
       f) from=$OPTARG;;
@@ -442,6 +444,7 @@ EOF
       m) mode=$OPTARG;;
       c) channel=$OPTARG;;
       j) threads=$OPTARG;;
+      s) samplerate=$OPTARG;;
       *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
@@ -460,14 +463,18 @@ EOF
   else echo "ERROR: Unsupported mode." >&2; return 1
   fi
 
+  if [[ -n "$samplerate" ]]; then
+    soxsample="rate ${samplerate}"
+  fi
+
   for i in "$@"; do
     b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor rate 48000"
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
   done
 
   for i in "$@"; do
     b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor rate 48000"
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
   done | parallel --no-notice -j "$threads"
 }
 
