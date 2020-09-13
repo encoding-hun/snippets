@@ -402,35 +402,37 @@ Usage: audiostretch [options] [input(s)]
 
 Options:
 
-  -f [from fps]  Sets input file(s)' FPS.
-                 (default: 25)
+  -f [from fps]     Sets input file(s)' FPS.
+                    (default: 25)
 
-  -t [to fps]    Sets output file(s)' FPS.
-                 (default: 24000/1001)
+  -t [to fps]       Sets output file(s)' FPS.
+                    (default: 24000/1001)
 
-  -m [mode]      Sets mode. [tstretch/resample]
-                 tstretch (also called as timestretch, or tempo in sox) stretches
-                 the audio and applies pitch correction so the pitch stays the same.
-                 resample (called as speed in sox) only stretches the audio
-                 without applying pitch correction so the pitch will change.
-                 (default: tstretch)
+  -m [mode]         Sets mode. [tstretch/resample]
+                    tstretch (also called as timestretch, or tempo in sox) stretches
+                    the audio and applies pitch correction so the pitch stays the same.
+                    resample (called as speed in sox) only stretches the audio
+                    without applying pitch correction so the pitch will change.
+                    (default: tstretch)
 
-  -c [channel]   Sets number of channels. [2/6]
-                 2=2.0
-                 6=5.1
-                 (default: 2)
+  -c [channel]      Sets number of channels. [2/6]
+                    2=2.0
+                    6=5.1
+                    (default: 2)
 
-  -j [threads]   Sets number of threads that will be used in order
-                 to parallelize the commands.
-                 (default: 4)
+  -j [threads]      Sets number of threads that will be used in order
+                    to parallelize the commands.
+                    (default: 4)
 
-  -k             Keep original sample rate.
+  -s [sample rate]  Sets the output sample rate.
+                    If you omit this the output's sample rate won't change.
 
 Examples:
 
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
   audiostretch -m resample -f 25 -t 24 *.aac
+  audiostretch -k 48000 input.mka
 EOF
   )
 
