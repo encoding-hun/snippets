@@ -67,18 +67,9 @@ aacenc() {
   for i in "$@"; do
     b=$(basename "$i")
     if [[ $i == *.wav ]]; then
-      echo qaac64.exe -V 110 --no-delay --ignorelength -o "${b%.*}.m4a" "$i"
+      echo qaac64.exe -V 110 --no-delay --ignorelength -o "${b%.*}.m4a" "$i" >&2 | tee
     else
-      echo "ffmpeg -i '$i' -f wav - | qaac64.exe -V 110 --no-delay --ignorelength -o '${b%.*}.m4a' -"
-    fi
-  done
-
-  for i in "$@"; do
-    b=$(basename "$i")
-    if [[ $i == *.wav ]]; then
-      echo qaac64.exe -V 110 --no-delay --ignorelength -o "${b%.*}.m4a" "$i"
-    else
-      echo "ffmpeg -i '$i' -f wav - | qaac64.exe -V 110 --no-delay --ignorelength -o '${b%.*}.m4a' -"
+      echo "ffmpeg -i '$i' -v quiet -f wav - | qaac64.exe -V 110 --no-delay --ignorelength -o '${b%.*}.m4a' -" >&2 | tee
     fi
   done | parallel "${args[@]}"
 }
