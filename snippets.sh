@@ -395,40 +395,32 @@ EOF
 }
 
 audiostretch() {
-  local help from to mode channel threads factor samplerate i b
+  local help from to mode channel threads factor i b
 
   help=$(cat <<'EOF'
 Usage: audiostretch [options] [input(s)]
 
 Options:
-
   -f [from fps]     Sets input file(s)' FPS.
                     (default: 25)
-
   -t [to fps]       Sets output file(s)' FPS.
                     (default: 24000/1001)
-
   -m [mode]         Sets mode. [tstretch/resample]
                     tstretch (also called as timestretch, or tempo in sox) stretches
                     the audio and applies pitch correction so the pitch stays the same.
                     resample (called as speed in sox) only stretches the audio
                     without applying pitch correction so the pitch will change.
                     (default: tstretch)
-
   -c [channel]      Sets number of channels. [2/6]
                     2=2.0
                     6=5.1
                     (default: 2)
-
   -j [threads]      Sets number of threads that will be used in order
                     to parallelize the commands.
                     (default: 4)
-
   -s [sample rate]  Sets the output sample rate.
                     If you omit this the output's sample rate won't change.
-
 Examples:
-
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
   audiostretch -m resample -f 25 -t 24 *.aac
@@ -469,15 +461,15 @@ EOF
     soxsample="rate ${samplerate}"
   fi
 
-  for i in "$@"; do
-    b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
-  done
+  args=(--no-notice -j "$threads")
+  if (( threads == 1 || $# == 1 )); then
+    args+=(-u)
+  fi
 
   for i in "$@"; do
     b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
-  done | parallel --no-notice -j "$threads"
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+  done | parallel "${args[@]}"
 }
 
 update_p10k() {
