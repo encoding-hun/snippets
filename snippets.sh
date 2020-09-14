@@ -395,7 +395,7 @@ EOF
 }
 
 audiostretch() {
-  local help from to mode channel threads factor i b
+  local help from to mode channel threads factor samplerate i b
 
   help=$(cat <<'EOF'
 Usage: audiostretch [options] [input(s)]
@@ -490,6 +490,8 @@ update_p10k() {
   fi
 }
 
+# downmixes inputs to stereo audios
+# inputok stereora downmixelése
 downmix() {
   local i
   for i in "$@"; do
@@ -498,19 +500,29 @@ downmix() {
   done
 }
 
+# find forced tables
+# forced táblák keresése
 findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
 
+# downloads dub links from list.txt
+# szinkronok letöltése list.txt-ből
 grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
 
+# uploads images to kek.sh
+# képek feltöltése kek.sh-ra
 keksh() {
-  local f
-  for f in "$@"; do
-    curl -fsSL https://kek.sh/api/v1/posts -F file="@$f" | jq -r '"https://i.kek.sh/\(.filename)"'
+  local i b
+  for i in "$@"; do
+    b=$(basename "$i")
+    printf '%s: ' "$b"
+    curl -fsSL https://kek.sh/api/v1/posts -F file="@$i" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
 }
 
+# uploads files to x0.at
+# fájlok feltöltése x0.at-re
 x0() {
-  local i
+  local i b
   for i in "$@"; do
     b=$(basename "$i")
     printf '%s: ' "$b"
@@ -519,4 +531,28 @@ x0() {
   done
 }
 
+# creates a 90 seconds sample from input
+# 90mp-es sample készítése input fájlból
 createsample() { mkvmerge -o sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$1"; }
+
+# creates two files that compare2.exe can open and opens them
+# you can set a start time for the second source with the third argument
+# létrehoz két fájlt, amit compare2.exe kezelni tud, majd megnyitja őket
+# harmadik opcióval megadható egy kezdési idő a második forrásnak
+# usage:
+# audiocomp source1 source2
+# examples:
+# audiocomp eng.eac3 szinkron.mka
+# audiocomp eng.eac3 szinkron.mka 10:15
+audiocomp() {
+  local starttime
+  if [[ -n "$3" ]]; then
+    starttime=(-ss "$3")
+  else
+    starttime=(-ss 0)
+  fi
+  ffmpeg -y -v quiet -i "$1" -ac 1 -c:a pcm_s16le -t 10:00 audiocomp_orig.wav
+  ffmpeg -y -v quiet "${starttime[@]}" -i "$2" -ac 1 -c:a pcm_s16le -t 10:00 audiocomp_other.wav
+  compare2.exe audiocomp_orig.wav audiocomp_other.wav
+  rm audiocomp_*wav
+}
