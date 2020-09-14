@@ -531,8 +531,6 @@ createsample() { mkvmerge -o sample/sample.mkv --title sample --split parts:00:0
 # you can set a start time for the second source with the third argument
 # létrehoz két fájlt, amit compare2.exe kezelni tud, majd megnyitja őket
 # harmadik opcióval megadható egy kezdési idő a második forrásnak
-# usage:
-# audiocomp source1 source2
 # examples:
 # audiocomp eng.eac3 szinkron.mka
 # audiocomp eng.eac3 szinkron.mka 10:15
