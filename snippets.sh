@@ -469,15 +469,15 @@ EOF
     soxsample="rate ${samplerate}"
   fi
 
-  for i in "$@"; do
-    b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
-  done
+  args=(--no-notice -j "$threads")
+  if (( threads == 1 || $# == 1 )); then
+    args+=(-u)
+  fi
 
   for i in "$@"; do
     b=$(basename "$i")
-    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample"
-  done | parallel --no-notice -j "$threads"
+    echo "ffmpeg -i '$i' -loglevel warning -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+  done | parallel "${args[@]}"
 }
 
 update_p10k() {
