@@ -57,7 +57,13 @@ sxcu() {
 # aacenc [input]
 # aacenc xy.wav / aacenc *wav
 aacenc() {
-  local i b
+  local args i b
+
+  args=(--no-notice -j 4)
+  if (( $# == 1 )); then
+    args+=(-u)
+  fi
+
   for i in "$@"; do
     b=$(basename "$i")
     if [[ $i == *.wav ]]; then
@@ -66,6 +72,7 @@ aacenc() {
       echo "ffmpeg -i '$i' -f wav - | qaac64.exe -V 110 --no-delay --ignorelength -o '${b%.*}.m4a' -"
     fi
   done
+
   for i in "$@"; do
     b=$(basename "$i")
     if [[ $i == *.wav ]]; then
@@ -73,7 +80,7 @@ aacenc() {
     else
       echo "ffmpeg -i '$i' -f wav - | qaac64.exe -V 110 --no-delay --ignorelength -o '${b%.*}.m4a' -"
     fi
-  done | parallel --no-notice -j4
+  done | parallel "${args[@]}"
 }
 
 # ffmpeg frissítés
@@ -88,6 +95,8 @@ update_ffmpeg() {
   sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
 }
 
+# creates spectrograms and uploads them to kek.sh
+# spectrogramok létrehozása és feltöltése kek.sh-ra
 spec() {
   local help channel x b
 
@@ -121,7 +130,6 @@ EOF
 
   for x in "$@"; do
     b=$(basename "$x")
-    echo -n "$b: "
     ffmpeg -y -loglevel warning -i "$x" -ac "$channel" spec_temp.w64
     sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     keksh "${b%.*}.png"
@@ -395,7 +403,7 @@ EOF
 }
 
 audiostretch() {
-  local help from to mode channel threads factor i b
+  local args help from to mode channel threads factor i b
 
   help=$(cat <<'EOF'
 Usage: audiostretch [options] [input(s)]
