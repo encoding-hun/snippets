@@ -418,12 +418,12 @@ Options:
                     to parallelize the commands.
                     (default: 4)
   -s [sample rate]  Sets the output sample rate.
-                    If you omit this the output's sample rate won't change.
+                    If you omit this the output's sample rate won't be changed.
 Examples:
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
   audiostretch -m resample -f 25 -t 24 *.aac
-  audiostretch -k 48000 input.mka
+  audiostretch -s 48000 input.mka
 EOF
   )
 
