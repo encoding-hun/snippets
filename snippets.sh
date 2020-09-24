@@ -559,10 +559,11 @@ getdialnorm() {
       ss="$x:00"
       ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 1 -c copy getdialnorm.ac3
       newdialnorm=$(mediainfo getdialnorm.ac3 --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
-      printf '\r%3s min: %s' "$x" "$newdialnorm"
       if [[ ! $newdialnorm == $dialnorm ]]; then
         dialnorm="$newdialnorm"
         printf '\r%3s min: %s\n' "$x" "$dialnorm"
+      else
+        printf '\r%3s min: %s' "$x" "$newdialnorm"
       fi
     done
     printf '\33[2K\n'
