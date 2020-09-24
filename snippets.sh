@@ -554,16 +554,18 @@ getdialnorm() {
     seconds=$(ffprobe "$i" -v quiet -print_format json -show_format | jq -r '.format.duration')
     minutes=$(bc <<< "scale=0; $seconds/60")
     dialnorm=$(mediainfo "$i" --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
-    printf '  0min: %s\n' "$dialnorm"
+    printf '  0 min: %s\n' "$dialnorm"
     for x in $(seq 0 "$minutes"); do
       ss="$x:00"
       ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 1 -c copy getdialnorm.ac3
       newdialnorm=$(mediainfo getdialnorm.ac3 --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
+      printf '\r%3s min: %s' "$x" "$newdialnorm"
       if [[ ! $newdialnorm == $dialnorm ]]; then
         dialnorm="$newdialnorm"
-        printf '%3smin: %s\n' "$x" "$dialnorm"
+        printf '\r%3s min: %s\n' "$x" "$dialnorm"
       fi
     done
+    printf '\33[2K\n'
   done
   rm getdialnorm.ac3
 }
