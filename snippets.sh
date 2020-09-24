@@ -546,6 +546,11 @@ audiocomp() {
   rm audiocomp_*wav
 }
 
+# prints out dialnorm value for each minute in each input file
+# kiírja a dialnorm értékeket minden perchez minden input fájlban
+# examples:
+# getdialnorm input.ac3
+# getdialnorm *ac3
 getdialnorm() {
   local i x b ss dialnorm newdialnorm
   for i in "$@"; do
