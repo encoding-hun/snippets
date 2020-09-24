@@ -555,7 +555,7 @@ getdialnorm() {
     minutes=$(bc <<< "scale=0; $seconds/60")
     dialnorm=$(mediainfo "$i" --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
     printf '  0 min: %s\n' "$dialnorm"
-    for x in $(seq 0 "$minutes"); do
+    for x in $(seq 1 "$minutes"); do
       ss="$x:00"
       ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 1 -c copy getdialnorm.ac3
       newdialnorm=$(mediainfo getdialnorm.ac3 --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
