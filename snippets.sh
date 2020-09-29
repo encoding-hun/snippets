@@ -11,7 +11,13 @@ update_snippets() {
 
 # renames mkv title to the filename
 # mkv fájlok címét a fájlnévre írja át
-mkvtitles() { local i; for i in "$@"; do mkvpropedit "$i" -e info -s "title=${i%.mkv}"; done; }
+mkvtitles() {
+  local i b
+  for i in "$@"; do
+    b=$(basename "$i")
+    mkvpropedit "$i" -e info -s "title=${b%.mkv}"
+  done
+}
 
 # extracting iso file
 # iso fájl kibontása
