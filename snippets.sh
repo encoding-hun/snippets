@@ -339,7 +339,7 @@ imagegen() {
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
       framepos=$(bc <<< "scale=4; $interval*$i")
-      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 "${b%.*}_$i.png"
+      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -pix_fmt rgb24 -frames:v 1 "${b%.*}_$i.png"
       (( c++ ))
 	    printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
