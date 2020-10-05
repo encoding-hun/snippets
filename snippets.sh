@@ -127,11 +127,16 @@ EOF
 
   for x in "$@"; do
     b=$(basename "$x")
-    ffmpeg -y -v quiet -i "$x" -ac "$channel" spec_temp.w64
-    sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
-    keksh "${b%.*}.png"
+    printf '%s: ' "$b"
+    if [[ "$x" == *.wav ]] || [[ "$x" == *.w64 ]]; then
+      sox "$x" -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
+    else
+      ffmpeg -y -v quiet -i "$x" -ac "$channel" spec_temp.w64
+      sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
+    fi
+    curl -fsSL https://kek.sh/api/v1/posts -F file="@$i" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
-  rm spec_temp.w64
+  rm -f spec_temp.w64
 }
 
 # AviSynth 2pass encode, the avs script can be written right in the command. The snippet contains settings, you only have to specify settings that you want to overwrite
