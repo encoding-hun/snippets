@@ -134,7 +134,7 @@ EOF
       ffmpeg -y -v quiet -i "$x" -ac "$channel" spec_temp.w64
       sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     fi
-    curl -fsSL https://kek.sh/api/v1/posts -F file="@$i" | jq -r '"https://i.kek.sh/\(.filename)"'
+    curl -fsSL https://kek.sh/api/v1/posts -F file="${b%.*}.png" | jq -r '"https://i.kek.sh/\(.filename)"'
   done
   rm -f spec_temp.w64
 }
