@@ -405,7 +405,7 @@ EOF
 }
 
 audiostretch() {
-  local args help from to mode channel threads factor i b
+  local args help from to mode channel threads factor i b samplerate soxsample logo starttime
 
   help=$(cat <<'EOF'
 Usage: audiostretch [options] [input(s)]
@@ -430,17 +430,20 @@ Options:
                     (default: 4)
   -s [sample rate]  Sets the output sample rate.
                     If you omit this the output's sample rate won't be changed.
+  -l [logo]         Search for logo/intro sound(s) and only stretch from there.
+                    It can be a file or a folder containing the sounds.
 Examples:
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
   audiostretch -m resample -f 25 -t 24 *.aac
   audiostretch -s 48000 input.mka
+  audiostretch -l nf.wav input.mp2
 EOF
   )
 
   from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
 
-  while getopts ':hf:t:m:c:j:s:' OPTION; do
+  while getopts ':hf:t:m:c:j:s:l:' OPTION; do
     case "$OPTION" in
       h) echo "$help"; return 0;;
       f) from=$OPTARG;;
@@ -449,6 +452,7 @@ EOF
       c) channel=$OPTARG;;
       j) threads=$OPTARG;;
       s) samplerate=$OPTARG;;
+      l) logo=$OPTARG;;
       *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
   done
@@ -477,8 +481,13 @@ EOF
   fi
 
   for i in "$@"; do
+    if [[ -n "$logo" ]]; then
+      starttime=(-ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
+    else
+      starttime=()
+    fi
     b=$(basename "$i")
-    echo "ffmpeg -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+    echo "ffmpeg ${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
   done | parallel "${args[@]}"
 }
 
