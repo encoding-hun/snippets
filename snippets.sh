@@ -482,12 +482,12 @@ EOF
 
   for i in "$@"; do
     if [[ -n "$logo" ]]; then
-      starttime=(-ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
+      starttime=( -ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
     else
       starttime=()
     fi
     b=$(basename "$i")
-    echo "ffmpeg ${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+    echo "ffmpeg${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
   done | parallel "${args[@]}"
 }
 
