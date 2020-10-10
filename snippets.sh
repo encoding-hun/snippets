@@ -443,8 +443,7 @@ Options:
 Examples:
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
-  audiostretch -m resample -f 25 -t 24 *.aac
-  audiostretch -s 48000 input.mka
+  audiostretch -m resample -f 24000/1001 -t 24 *.aac
   audiostretch -l nf.wav input.mp2
 EOF
   )
