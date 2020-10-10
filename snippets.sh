@@ -413,25 +413,33 @@ Usage: audiostretch [options] [input(s)]
 Options:
   -f [from fps]     Sets input file(s)' FPS.
                     (default: 25)
+
   -t [to fps]       Sets output file(s)' FPS.
                     (default: 24000/1001)
+
   -m [mode]         Sets mode. [tstretch/resample]
                     tstretch (also called as timestretch, or tempo in sox) stretches
                     the audio and applies pitch correction so the pitch stays the same.
                     resample (called as speed in sox) only stretches the audio
                     without applying pitch correction so the pitch will change.
                     (default: tstretch)
+
   -c [channel]      Sets number of channels. [2/6]
                     2=2.0
                     6=5.1
                     (default: 2)
+
   -j [threads]      Sets number of threads that will be used in order
                     to parallelize the commands.
                     (default: 4)
+
   -s [sample rate]  Sets the output sample rate.
                     If you omit this the output's sample rate won't be changed.
-  -l [logo]         Search for logo/intro sound(s) and only stretch from there.
+
+  -l [logo]         Only works on zsh and requires: https://github.com/pcroland/getlogotime
+                    Search for logo/intro sound(s) and only stretch from there.
                     It can be a file or a folder containing the sounds.
+
 Examples:
   audiostretch input.mp2
   audiostretch -c 6 input.ac3
