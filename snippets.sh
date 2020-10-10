@@ -482,7 +482,7 @@ EOF
 
   for i in "$@"; do
     if [[ -n "$logo" ]]; then
-      starttime=( -ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
+      starttime=(' '-ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
     else
       starttime=()
     fi
