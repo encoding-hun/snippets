@@ -437,7 +437,7 @@ Options:
                     If you omit this the output's sample rate won't be changed.
 
   -l [logo]         Only works on zsh and requires: https://github.com/pcroland/getlogotime
-                    Search for logo/intro sound(s) and only stretch from there.
+                    Searches for logo/intro sound(s) and only stretches from there.
                     It can be a file or a folder containing the sounds.
 
 Examples:
