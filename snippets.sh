@@ -212,6 +212,15 @@ extractmono() {
   )
 }
 
+extract2.0() {
+  for i in "$@"; do
+    ffmpeg -i "$i" \
+    -filter_complex "channelsplit=channel_layout=5.1[FL][FR]" \
+    -c:a pcm_s24le -map "[FL]" ${i%.*}_L.wav \
+    -c:a pcm_s24le -map "[FR]" ${i%.*}_R.wav
+  done
+}
+
 extract5.1() {
   for i in "$@"; do
     ffmpeg -i "$i" \
