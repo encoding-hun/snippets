@@ -490,11 +490,14 @@ EOF
 
   for i in "$@"; do
     if [[ -n "$logo" ]]; then
+      # shellcheck disable=SC2016
+      # shellcheck disable=SC1003
       starttime=(' -ss $(getlogotime '${i} ${logo}' | tr '\''\'\\r\' \''\'\\n\'' | tail -1)')
     else
       starttime=()
     fi
     b=$(basename "$i")
+    # shellcheck disable=SC2128
     echo "ffmpeg${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
   done | parallel "${args[@]}"
 }
@@ -592,7 +595,7 @@ getdialnorm() {
       ss="$x:00"
       ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 1 -c copy getdialnorm.ac3
       newdialnorm=$(mediainfo getdialnorm.ac3 --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
-      if [[ ! $newdialnorm == $dialnorm ]]; then
+      if [[ ! "$newdialnorm" == "$dialnorm" ]]; then
         dialnorm="$newdialnorm"
         printf '\r%3s min: %s\n' "$x" "$dialnorm"
       else
