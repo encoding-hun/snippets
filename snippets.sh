@@ -214,7 +214,7 @@ extractmono() {
 
 # extracting links from a link pointing to a directory
 # mappára mutató linkből visszadja a fájlok linkjeit
-getlinks () {
+getlinks() {
   local link auth proto auth_param
 
   link=$1
@@ -567,8 +567,8 @@ audiocomp() {
   else
     starttime=(-ss 0)
   fi
-  ffmpeg -y -v quiet -i "$1" -ac 1 -c:a pcm_s16le -t 10:00 audiocomp_orig.wav
-  ffmpeg -y -v quiet "${starttime[@]}" -i "$2" -ac 1 -c:a pcm_s16le -t 10:00 audiocomp_other.wav
+  ffmpeg -y -v quiet -i "$1" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_orig.wav
+  ffmpeg -y -v quiet "${starttime[@]}" -i "$2" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_other.wav
   compare2.exe audiocomp_orig.wav audiocomp_other.wav
   rm audiocomp_*wav
 }
