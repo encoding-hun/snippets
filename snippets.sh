@@ -434,7 +434,7 @@ Options:
   -s [sample rate]  Sets the output sample rate.
                     If you omit this the output's sample rate won't be changed.
 
-  -l [logo]         Only works on zsh and requires: https://github.com/pcroland/getlogotime
+  -l [logo]         Requires getlogotime: https://github.com/pcroland/getlogotime
                     Searches for logo/intro sound(s) and only stretches from there.
                     It can be a file or a folder containing the sounds.
 
@@ -487,7 +487,7 @@ EOF
 
   for i in "$@"; do
     if [[ -n "$logo" ]]; then
-      starttime=(' '-ss '${$(getlogotime '${i} ${logo}')##*$'\''\\r'\''}')
+      starttime=(' -ss $(getlogotime '${i} ${logo}' | tr '\''\'\\r\' \''\'\\n\'' | tail -1)')
     else
       starttime=()
     fi
