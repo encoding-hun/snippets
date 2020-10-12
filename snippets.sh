@@ -242,10 +242,10 @@ extract7.1() {
     -c:a pcm_s24le -map "[FR]" ${i%.*}_R.wav \
     -c:a pcm_s24le -map "[FC]" ${i%.*}_C.wav \
     -c:a pcm_s24le -map "[LFE]" ${i%.*}_LFE.wav \
-    -c:a pcm_s24le -map "[BL]" ${i%.*}_Lrs.wav \
-    -c:a pcm_s24le -map "[BR]" ${i%.*}_Rrs.wav \
     -c:a pcm_s24le -map "[SL]" ${i%.*}_Ls.wav \
-    -c:a pcm_s24le -map "[SR]" ${i%.*}_Rs.wav
+    -c:a pcm_s24le -map "[SR]" ${i%.*}_Rs.wav \
+    -c:a pcm_s24le -map "[BL]" ${i%.*}_Lrs.wav \
+    -c:a pcm_s24le -map "[BR]" ${i%.*}_Rrs.wav
   done
 }
 
