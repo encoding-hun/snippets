@@ -173,45 +173,6 @@ avsenc() {
   rm -r x264*mbtree
 }
 
-# extracting sounds to mono wav files
-# hang szétbontása wav fájlokra
-extractmono() {
-  (
-    command -v emulate >/dev/null && emulate bash
-
-    for f in "$@"; do
-      channel_layout=$(ffprobe -v error -show_entries stream=channel_layout -of csv=p=0 "$1" | sed '/^$/d')
-
-      if [[ $channel_layout == 'unknown' && $f != *.wav ]]; then
-        wav=${f%.*}.wav
-        ffmpeg -hide_banner -i "$f" -map 0:a:0 "$wav" -y && echo && extractmono "$wav" && rm -f "$wav"
-        continue
-      fi
-
-      [[ -n "$BASH_VERSION" ]] && readopt='-a'
-      [[ -n "$ZSH_VERSION" ]] && readopt='-A'
-
-      while read -r "${readopt?}" channel; do
-        channels_ffmpeg+=("$channel")
-        channels_dmp+=("$(sed -r 's/^F//g; s/^S([LR])$/\1s/g; s/^B([LR])$/\1rs/g' <<< "$channel")")
-      done < <(ffmpeg -hide_banner -layouts | awk "\$1 == \"${channel_layout}\" { print \$2 }" | tr '+' ' ')
-
-      num_channels=${#channels_ffmpeg[@]}
-
-      params=(-filter_complex "channelsplit=channel_layout=${channel_layout}")
-      for c in "${channels_ffmpeg[@]}"; do
-        params[1]+="[$c]"
-      done
-
-      for i in $(seq 0 "$(( num_channels - 1 ))"); do
-        params+=(-c:a pcm_s24le -map "[${channels_ffmpeg[i]}]" "${f%.*}_${channels_dmp[i]}.wav")
-      done
-
-      ffmpeg -hide_banner -i "$f" "${params[@]}" -y
-    done
-  )
-}
-
 extract2.0() {
   for i in "$@"; do
     ffmpeg -i "$i" \
