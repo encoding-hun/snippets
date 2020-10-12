@@ -212,6 +212,34 @@ extractmono() {
   )
 }
 
+extract5.1() {
+  for i in "$@"; do
+    ffmpeg -i "$i" \
+    -filter_complex "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" \
+    -c:a pcm_s24le -map "[FL]" ${i%.*}_L.wav \
+    -c:a pcm_s24le -map "[FR]" ${i%.*}_R.wav \
+    -c:a pcm_s24le -map "[FC]" ${i%.*}_C.wav \
+    -c:a pcm_s24le -map "[LFE]" ${i%.*}_LFE.wav \
+    -c:a pcm_s24le -map "[BL]" ${i%.*}_Lrs.wav \
+    -c:a pcm_s24le -map "[BR]" ${i%.*}_Rrs.wav
+  done
+}
+
+extract7.1() {
+  for i in "$@"; do
+    ffmpeg -i "$i" \
+    -filter_complex "channelsplit=channel_layout=7.1[FL][FR][FC][LFE][BL][BR][SL][SR]" \
+    -c:a pcm_s24le -map "[FL]" ${i%.*}_L.wav \
+    -c:a pcm_s24le -map "[FR]" ${i%.*}_R.wav \
+    -c:a pcm_s24le -map "[FC]" ${i%.*}_C.wav \
+    -c:a pcm_s24le -map "[LFE]" ${i%.*}_LFE.wav \
+    -c:a pcm_s24le -map "[BL]" ${i%.*}_Lrs.wav \
+    -c:a pcm_s24le -map "[BR]" ${i%.*}_Rrs.wav \
+    -c:a pcm_s24le -map "[SL]" ${i%.*}_Ls.wav \
+    -c:a pcm_s24le -map "[SR]" ${i%.*}_Rs.wav
+  done
+}
+
 # extracting links from a link pointing to a directory
 # mappára mutató linkből visszadja a fájlok linkjeit
 getlinks() {
