@@ -425,9 +425,10 @@ Options:
                     without applying pitch correction so the pitch will change.
                     (default: tstretch)
 
-  -c [channel]      Sets number of channels. [2/6]
+  -c [channel]      Sets number of channels. [2/6/8]
                     2=2.0
                     6=5.1
+                    8=7.1
                     (default: 2)
 
   -j [threads]      Sets number of threads that will be used in order
@@ -469,8 +470,8 @@ EOF
 
   factor=$(bc <<< "scale=20; ($to)/($from)")
 
-  if [[ $channel == 2 ]]; then outformat='wav'
-  elif [[ $channel == 6 ]]; then outformat='w64'
+  if [[ "$channel" == 2 ]]; then outformat='wav'
+  elif [[ "$channel" == 6 ]] || [[ "$channel" = 8 ]]; then outformat='w64'
   else echo "ERROR: Unsupported channel number." >&2; return 1
   fi
 
