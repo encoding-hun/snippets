@@ -607,3 +607,35 @@ getdialnorm() {
   done
   rm getdialnorm.ac3
 }
+
+# install / update pip, setuptools and wheel to the latest version
+# pip, setuptools és wheel telepítése / frissítése a legújabb verzióra
+updatepip() {
+  pip install --upgrade pip setuptools wheel
+}
+
+# create pyenv virtualenv using global version or specified one
+# pyenv virtualenv létrehozása globális vagy adott verzióval
+#
+# pvenv
+# pvenv 3.9.0
+# pvenv 3.9.0 name
+pvenv() {
+  pyenv virtualenv "${1:-$(pyenv global)}" "${2:-${PWD##*/}}" &&
+  pyenv local "${2:-${PWD##*/}}" &&
+  updatepip
+}
+
+# update pyenv virtualenv to global or specified version, keeping installed packages
+# pyenv virtualenv frissítése globális vagy adott verzióra, telepített csomagok megtartásával
+#
+# migrateenv
+# migrateenv 3.9.0
+migrateenv () {
+  tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
+  pip freeze >> "$tmpfile" &&
+  pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}" &&
+  pvenv "${1:-$(pyenv global)}" &&
+  pip install -r "$tmpfile" &&
+  rm -f "$tmpfile"
+}
