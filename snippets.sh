@@ -633,6 +633,7 @@ pvenv() {
 # migrateenv 3.9.0
 migrateenv () {
   tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
+  echo "Saving installed packages to $tmpfile"
   pip freeze >> "$tmpfile" &&
   pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}" &&
   pvenv "${1:-$(pyenv global)}" &&
