@@ -610,13 +610,13 @@ getdialnorm() {
 
 # install / update pip, setuptools and wheel to the latest version
 # pip, setuptools és wheel telepítése / frissítése a legújabb verzióra
-updatepip() {
+update_pip() {
   pip install --upgrade pip setuptools wheel
 }
 
 # create pyenv virtualenv using global version or specified one
 # pyenv virtualenv létrehozása globális vagy adott verzióval
-#
+# examples:
 # pvenv
 # pvenv 3.9.0
 # pvenv 3.9.0 name
@@ -628,7 +628,7 @@ pvenv() {
 
 # update pyenv virtualenv to global or specified version, keeping installed packages
 # pyenv virtualenv frissítése globális vagy adott verzióra, telepített csomagok megtartásával
-#
+# examples:
 # migrateenv
 # migrateenv 3.9.0
 migrateenv () {
