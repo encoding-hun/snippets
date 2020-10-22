@@ -631,7 +631,7 @@ pvenv() {
 # examples:
 # migrateenv
 # migrateenv 3.9.0
-migrateenv () {
+migrateenv() {
   tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
   echo "Saving installed packages to $tmpfile"
   pip freeze >> "$tmpfile" &&
@@ -640,3 +640,5 @@ migrateenv () {
   pip install -r "$tmpfile" &&
   rm -f "$tmpfile"
 }
+
+winuptime() { uptime.exe | cut -c22-; }
