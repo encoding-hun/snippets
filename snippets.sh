@@ -620,25 +620,41 @@ update_pip() {
 # pvenv
 # pvenv 3.9.0
 # pvenv 3.9.0 name
-pvenv() {
-  pyenv virtualenv "${1:-$(pyenv global)}" "${2:-${PWD##*/}}" &&
-  pyenv local "${2:-${PWD##*/}}" &&
+pvenv() (
+  set -e
+
+  version=${1:-$(pyenv global)}
+  name=${2:-${PWD##*/}}
+
+  echo "[+] Creating virtualenv $version/$name"
+  pyenv virtualenv "$version" "$name"
+  pyenv local "$name"
+
+  echo '[+] Updating pip'
   update_pip
-}
+)
 
 # update pyenv virtualenv to global or specified version, keeping installed packages
 # pyenv virtualenv frissítése globális vagy adott verzióra, telepített csomagok megtartásával
 # examples:
 # migrateenv
 # migrateenv 3.9.0
-migrateenv() {
+migrateenv() (
+  set -e
+
   tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
-  echo "Saving installed packages to $tmpfile"
-  pip freeze >> "$tmpfile" &&
-  pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}" &&
-  pvenv "$1" &&
-  pip install -r "$tmpfile" &&
+
+  echo "[+] Saving installed packages to $tmpfile"
+  pip freeze >> "$tmpfile"
+
+  echo '[+] Removing old virtualenv'
+  pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}"
+
+  pvenv "$1"
+
+  echo '[+] Reinstalling packages'
+  pip install -r "$tmpfile"
   rm -f "$tmpfile"
-}
+)
 
 winuptime() { uptime.exe | cut -c22-; }
