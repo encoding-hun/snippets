@@ -630,7 +630,7 @@ pvenv() (
   pyenv virtualenv "$version" "$name"
   pyenv local "$name"
 
-  echo '[+] Updating pip'
+  echo '[+] Updating base packages'
   update_pip
 )
 
