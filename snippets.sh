@@ -623,7 +623,7 @@ update_pip() {
 pvenv() {
   pyenv virtualenv "${1:-$(pyenv global)}" "${2:-${PWD##*/}}" &&
   pyenv local "${2:-${PWD##*/}}" &&
-  updatepip
+  update_pip
 }
 
 # update pyenv virtualenv to global or specified version, keeping installed packages
@@ -636,7 +636,7 @@ migrateenv() {
   echo "Saving installed packages to $tmpfile"
   pip freeze >> "$tmpfile" &&
   pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}" &&
-  pvenv "${1:-$(pyenv global)}" &&
+  pvenv "$1" &&
   pip install -r "$tmpfile" &&
   rm -f "$tmpfile"
 }
