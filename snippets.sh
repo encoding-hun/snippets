@@ -659,4 +659,4 @@ migrateenv() (
 
 winuptime() { uptime.exe | cut -c22-; }
 
-decrypt_pssh() { curl 'https://integration.widevine.com/_/pssh_decode' -H 'content-type: text/plain' --data-binary "$1" -w "\n"; }
+decode_pssh() { curl 'https://integration.widevine.com/_/pssh_decode' -H 'content-type: text/plain' --data-binary "$1" -w "\n"; }
