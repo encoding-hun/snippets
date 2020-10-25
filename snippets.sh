@@ -452,7 +452,7 @@ EOF
 
   from=25; to=24000/1001; mode=tstretch; channel=2; threads=4; bitdepth=24
 
-  while getopts ':hf:t:m:c:j:s:l:' OPTION; do
+  while getopts ':hf:t:m:c:j:s:b:l:' OPTION; do
     case "$OPTION" in
       h) echo "$help"; return 0;;
       f) from=$OPTARG;;
