@@ -147,7 +147,7 @@ avsenc() {
 
   avs_script=$1
   shift
-
+  # shellcheck disable=SC2054
   x264_opts=(--level 4.1 --preset veryslow --no-fast-pskip --keyint 240
              --colormatrix bt709  --vbv-maxrate 62500 --vbv-bufsize 78125 --merange 32
              --bframes 10 --deblock -3,-3 --qcomp 0.65 --aq-mode 3 --aq-strength 0.8 --psy-rd 1.2 --ipratio 1.3)
@@ -494,7 +494,7 @@ EOF
     if [[ -n "$logo" ]]; then
       # shellcheck disable=SC2016
       # shellcheck disable=SC1003
-      starttime=(' -ss $(getlogotime '${i} ${logo}' | tr '\''\'\\r\' \''\'\\n\'' | tail -1)')
+      starttime=(' -ss $(getlogotime '"${i}" "${logo}"' | tr '\''\'\\r\' \''\'\\n\'' | tail -1)')
     else
       starttime=()
     fi
