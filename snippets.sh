@@ -409,48 +409,48 @@ audiostretch() {
   local args help from to mode channel threads factor i b samplerate soxsample logo starttime
 
   help=$(cat <<'EOF'
-Usage: audiostretch [options] [input(s)]
+Usage:
+audiostretch [options] [input(s)]
+
+Examples:
+audiostretch input.mp2
+audiostretch -c 6 input.ac3
+audiostretch -m resample -f 24000/1001 -t 24 s01e*
+audiostretch -l nf.wav input.mp2
 
 Options:
-  -f [from fps]     Sets input file(s)' FPS.
-                    (default: 25)
+-f [from fps]       Sets FPS of the input.
+(default: 25)
 
-  -t [to fps]       Sets output file(s)' FPS.
-                    (default: 24000/1001)
+-t [to fps]         Sets FPS of the output.
+(default: 24000/1001)
+Speed/tempo value will be calculated from "-f" and ""-t".
 
-  -m [mode]         Sets mode. [tstretch/resample]
-                    tstretch (also called as timestretch, or tempo in sox) stretches
+-m [mode]           Sets mode. [tstretch/resample]
+(default: tstretch) tstretch (also called as timestretch, or tempo in sox) stretches
                     the audio and applies pitch correction so the pitch stays the same.
                     resample (called as speed in sox) only stretches the audio
                     without applying pitch correction so the pitch will change.
-                    (default: tstretch)
 
-  -c [channel]      Sets number of channels. [2/6/8]
-                    2=2.0
-                    6=5.1
-                    8=7.1
-                    (default: 2)
+-c [channel]        Sets number of channels for output. [2/6/8]
+(default: 2)        2=2.0, 6=5.1, 8=7.1
 
-  -j [threads]      Sets number of threads that will be used in order
-                    to parallelize the commands.
-                    (default: 4)
-
-  -s [sample rate]  Sets the output sample rate.
+-s [sample rate]    Sets same rate for output.
                     If you omit this the output's sample rate won't be changed.
 
-  -l [logo]         Requires getlogotime: https://github.com/pcroland/getlogotime
+-b [bit depth]      Sets bit depth for output.
+(default: 24)
+
+-j [threads]        Sets number of threads that will be used in order
+(default: 4)        to parallelize the commands.
+
+-l [logo]           Requires getlogotime: https://github.com/pcroland/getlogotime
                     Searches for logo/intro sound(s) and only stretches from there.
                     It can be a file or a folder containing the sounds.
-
-Examples:
-  audiostretch input.mp2
-  audiostretch -c 6 input.ac3
-  audiostretch -m resample -f 24000/1001 -t 24 *.aac
-  audiostretch -l nf.wav input.mp2
 EOF
   )
 
-  from=25; to=24000/1001; mode=tstretch; channel=2; threads=4
+  from=25; to=24000/1001; mode=tstretch; channel=2; threads=4; bitdepth=24
 
   while getopts ':hf:t:m:c:j:s:l:' OPTION; do
     case "$OPTION" in
@@ -461,6 +461,7 @@ EOF
       c) channel=$OPTARG;;
       j) threads=$OPTARG;;
       s) samplerate=$OPTARG;;
+      b) bitdepth=$OPTARG;;
       l) logo=$OPTARG;;
       *) echo "ERROR: Invalid option: -$OPTARG" >&2; return 1;;
     esac
@@ -499,7 +500,7 @@ EOF
     fi
     b=$(basename "$i")
     # shellcheck disable=SC2128
-    echo "ffmpeg${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b 24 '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+    echo "ffmpeg${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b $bitdepth '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
   done | parallel "${args[@]}"
 }
 
