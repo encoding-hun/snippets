@@ -406,7 +406,7 @@ EOF
 }
 
 audiostretch() {
-  local args help from to mode channel threads factor i b samplerate soxsample logo starttime
+  local args help from to mode channel threads factor i b samplerate soxsample logo starttime bitdepth
 
   help=$(cat <<'EOF'
 Usage:
