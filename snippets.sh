@@ -424,7 +424,7 @@ Options:
 
 -t [to fps]         Sets FPS of the output.
 (default: 24000/1001)
-Speed/tempo value will be calculated from "-f" and ""-t".
+Speed/tempo value will be calculated from "-f" and "-t".
 
 -m [mode]           Sets mode. [tstretch/resample]
 (default: tstretch) tstretch (also called as timestretch, or tempo in sox) stretches
