@@ -625,6 +625,7 @@ pvenv() (
   set -e
 
   version=${1:-$(pyenv global)}
+  version=${version%% *}
   name=${2:-${PWD##*/}}
 
   echo "[+] Creating virtualenv $version/$name"
