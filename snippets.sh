@@ -547,12 +547,15 @@ keksh() {
 # fájlok feltöltése x0.at-re
 x0() {
   local i b
-  for i in "$@"; do
-    b=$(basename "$i")
-    printf '%s: ' "$b"
-    curl -F "file=@${i}" "https://x0.at"
-    printf '\n'
-  done
+  if (( $# == 0 )); then
+    curl -w '\n' -F "file=@-" "https://x0.at"
+  else
+    for i in "$@"; do
+      b=$(basename "$i")
+      printf '%s: ' "$b"
+      curl -w '\n' -F "file=@${i}" "https://x0.at"
+    done
+  fi
 }
 
 # creates a 90 seconds sample from input
