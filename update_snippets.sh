@@ -34,10 +34,10 @@ if [[ -f "$snippets_file" ]]; then
     printf '\e[32mAlready up to date\e[0m\n' >&2
     needs_source=0
   else
-    diff --color=always -u "$snippets_file" "$tmpfile"
+    diff --color=always -u "$snippets_file" "$tmpfile" >&2
   fi
 else
-  diff --color=always -u "/dev/null" "$tmpfile"
+  diff --color=always -u "/dev/null" "$tmpfile" >&2
 fi
 printf '\n' >&2
 
