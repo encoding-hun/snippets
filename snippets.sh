@@ -674,3 +674,11 @@ decode_pssh() {
 cheatsh() {
   curl cheat.sh/"$1"
 }
+
+scat() {
+  pygmentize -O style=native "$@"
+}
+
+showfunc() {
+  declare -f "$1" | sed -r 's/\t/    /g; s/    /  /g' | scat -l sh
+}
