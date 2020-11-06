@@ -4,10 +4,10 @@
 # snippetek frissítése
 update_snippets() {
   local file
-  # shellcheck disable=SC1090
   file=$(curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/master/update_snippets.sh | bash -s - --selfupdate)
   if [[ -n "$file" ]]; then
     printf 'Sourcing %s\n' "$file"
+    # shellcheck disable=SC1090
     source "$file"
   fi
 }
