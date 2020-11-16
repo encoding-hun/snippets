@@ -667,6 +667,14 @@ migrateenv() (
 
 winuptime() { uptime.exe | cut -c22-; }
 
+decode_challenge() {
+  curl -s 'https://integration.widevine.com/_/license_request' -H 'content-type: text/plain' --data-binary "${1:-$(cat)}" | tail +2 | jq
+}
+
+decode_license() {
+  curl -s 'https://integration.widevine.com/_/license_response' -H 'content-type: text/plain' --data-binary "${1:-$(cat)}" | tail +2 | jq
+}
+
 decode_pssh() {
   curl -s 'https://integration.widevine.com/_/pssh_decode' -H 'content-type: text/plain' --data-binary "${1:-$(cat)}" | tail +2 | jq
 }
