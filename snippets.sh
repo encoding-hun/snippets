@@ -551,14 +551,28 @@ keksh() {
 x0() {
   local i b
   if (( $# == 0 )); then
-    curl -w '\n' -F "file=@-" "https://x0.at"
+    echo "$(curl -s -F "file=@${i}" "https://x0.at")"
   else
     for i in "$@"; do
       b=$(basename "$i")
       printf '%s: ' "$b"
-      curl -w '\n' -F "file=@${i}" "https://x0.at"
+      echo "$(curl -s -F "file=@${i}" "https://x0.at")"
     done
   fi
+}
+
+# uploads files to femto.pw
+# fájlok feltöltése femto.pw-re
+femto() {
+  local i b
+  if (( $# == 0 )); then
+    echo "$(curl -s -F "upload=@$i" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+  else
+    for i in "$@"; do
+      b=$(basename "$i")
+      printf '%s: ' "$b"
+      echo "$(curl -s -F "upload=@$i" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+    done
 }
 
 # creates a 90 seconds sample from input
