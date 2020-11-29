@@ -573,6 +573,7 @@ femto() {
       printf '%s: ' "$b"
       echo "$(curl -s -F "upload=@$i" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
     done
+  fi
 }
 
 # creates a 90 seconds sample from input
