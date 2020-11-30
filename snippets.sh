@@ -551,7 +551,7 @@ keksh() {
 x0() {
   local i b
   if (( $# == 0 )); then
-    echo "$(curl -s -F "file=@${i}" "https://x0.at")"
+    echo "$(curl -s -F "file=@-" "https://x0.at")"
   else
     for i in "$@"; do
       b=$(basename "$i")
@@ -566,7 +566,7 @@ x0() {
 femto() {
   local i b
   if (( $# == 0 )); then
-    echo "$(curl -s -F "upload=@$i" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+    echo "$(curl -s -F "upload=@-" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
   else
     for i in "$@"; do
       b=$(basename "$i")
