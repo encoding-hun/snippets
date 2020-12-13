@@ -737,3 +737,10 @@ scat() {
 showfunc() {
   declare -f "$1" | sed -r 's/\t/    /g; s/    /  /g' | scat -l sh
 }
+
+sleepuntilmidnight() {
+  local seconds
+  seconds=$(($(date -d "tomorrow 0:00" +%s) - $(date +%s)))
+  echo "sleeping $seconds seconds"
+  sleep "$seconds"
+}
