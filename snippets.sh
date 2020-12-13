@@ -614,20 +614,52 @@ getdialnorm() {
     minutes=$(bc <<< "scale=0; $seconds/60")
     dialnorm=$(mediainfo "$i" --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
     printf '  0 min: %s\n' "$dialnorm"
+    [[ "$minutes" == 0 ]] && return 1
     for x in $(seq 1 "$minutes"); do
       ss="$x:00"
-      ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 1 -c copy getdialnorm.ac3
+      ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 0.1 -c copy getdialnorm.ac3
       newdialnorm=$(mediainfo getdialnorm.ac3 --full | grep 'Dialog Normalization' | tail -1 | cut -c44-49)
-      if [[ ! "$newdialnorm" == "$dialnorm" ]]; then
+      if [[ "$newdialnorm" == "$dialnorm" ]]; then
+        printf '\r%3s min: %s' "$x" "$newdialnorm"
+      else
         dialnorm="$newdialnorm"
         printf '\r%3s min: %s\n' "$x" "$dialnorm"
-      else
-        printf '\r%3s min: %s' "$x" "$newdialnorm"
       fi
     done
     printf '\33[2K\n'
   done
   rm getdialnorm.ac3
+}
+
+# prints out channel numbers for each minute in each input file
+# kiírja a csatornák számát minden perchez minden input fájlban
+# examples:
+# getchannels input.ac3
+# getchannels *ac3
+getchannels() {
+  local i x b ss channels newchannels
+  for i in "$@"; do
+    b=$(basename "$i")
+    printf '%s:\n' "$b"
+    seconds=$(ffprobe "$i" -v quiet -print_format json -show_format | jq -r '.format.duration')
+    minutes=$(bc <<< "scale=0; $seconds/60")
+    channels=$(mediainfo "$i" | grep 'Channel(s)' | cut -c 44-60)
+    printf '  0 min: %s\n' "$channels"
+    [[ "$minutes" == 0 ]] && return 1
+    for x in $(seq 1 "$minutes"); do
+      ss="$x:00"
+      ffmpeg -y -v quiet -ss "$ss" -i "$i" -t 0.1 -c copy getchannels.ac3
+      newchannels=$(mediainfo getchannels.ac3 | grep 'Channel(s)' | cut -c 44-60)
+      if [[ "$newchannels" == "$channels" ]]; then
+        printf '\r%3s min: %s' "$x" "$newchannels"
+      else
+        channels="$newchannels"
+        printf '\r%3s min: %s\n' "$x" "$channels"
+      fi
+    done
+    printf '\33[2K\n'
+  done
+  rm getchannels.ac3
 }
 
 # install / update pip, setuptools and wheel to the latest version
