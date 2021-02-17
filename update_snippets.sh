@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shell=$(cat "/proc/$PPID/comm")
+shell=$(cat "/proc/$PPID/comm" 2>/dev/null)
 detect_shell() {
   if [[ $shell == *bash* ]]; then
     shell='bash'
