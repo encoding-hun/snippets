@@ -566,12 +566,12 @@ x0() {
 femto() {
   local i b
   if (( $# == 0 )); then
-    echo "$(curl -s -F "upload=@-" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+    echo "$(curl -s -F "upload=@-" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
   else
     for i in "$@"; do
       b=$(basename "$i")
       printf '%s: ' "$b"
-      echo "$(curl -s -F "upload=@$i" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+      echo "$(curl -s -F "upload=@$i" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
     done
   fi
 }
