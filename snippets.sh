@@ -744,3 +744,26 @@ sleepuntilmidnight() {
   echo "sleeping $seconds seconds"
   sleep "$seconds"
 }
+
+getranges() {
+  local start
+  local end
+
+  while read -r num; do
+    if [[ -z "$start" ]]; then
+      start="$num"
+    elif [[ -z "$end" ]] || (( num == end + 1 )); then
+      end="$num"
+    else
+      printf '%d %d\n' "$start" "$end"
+      start="$num"
+      end=""
+    fi
+  done
+
+  if [[ -n "$start" ]] && [[ -n "$end" ]]; then
+    printf '%d %d\n' "$start" "$end"
+  fi
+}
+
+crushpng() { oxipng --strip safe -i 0 "$@"; }
