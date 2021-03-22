@@ -767,3 +767,9 @@ getranges() {
 }
 
 crushpng() { oxipng --strip safe -i 0 "$@"; }
+
+fixbranch() {
+  git branch -m master main
+  git fetch origin
+  git branch -u origin/master main
+}
