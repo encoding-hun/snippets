@@ -134,7 +134,7 @@ EOF
     if [[ "$x" == *.wav ]] || [[ "$x" == *.w64 ]]; then
       sox "$x" -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     else
-      ffmpeg -y -v quiet -i "$x" -ac "$channel" spec_temp.w64
+      ffmpeg -y -v quiet -drc_scale 0 -i "$x" -ac "$channel" spec_temp.w64
       sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     fi
     curl -fsSL https://kek.sh/api/v1/posts -F file="@${b%.*}.png" | jq -r '"https://i.kek.sh/\(.filename)"'
@@ -179,7 +179,7 @@ avsenc() {
 extract2.0() {
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -i "$i" \
+    ffmpeg -drc_scale 0 -i "$i" \
     -filter_complex "channelsplit=channel_layout=5.1[FL][FR]" \
     -c:a pcm_s24le -map "[FL]" "${b%.*}"_L.wav \
     -c:a pcm_s24le -map "[FR]" "${b%.*}"_R.wav
@@ -189,7 +189,7 @@ extract2.0() {
 extract5.1() {
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -i "$i" \
+    ffmpeg -drc_scale 0 -i "$i" \
     -filter_complex "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" \
     -c:a pcm_s24le -map "[FL]" "${b%.*}"_L.wav \
     -c:a pcm_s24le -map "[FR]" "${b%.*}"_R.wav \
@@ -203,7 +203,7 @@ extract5.1() {
 extract7.1() {
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -i "$i" \
+    ffmpeg -drc_scale 0 -i "$i" \
     -filter_complex "channelsplit=channel_layout=7.1[FL][FR][FC][LFE][BL][BR][SL][SR]" \
     -c:a pcm_s24le -map "[FL]" "${b%.*}"_L.wav \
     -c:a pcm_s24le -map "[FR]" "${b%.*}"_R.wav \
@@ -503,7 +503,7 @@ EOF
     fi
     b=$(basename "$i")
     # shellcheck disable=SC2128
-    echo "ffmpeg${starttime} -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b $bitdepth '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
+    echo "ffmpeg${starttime} -drc_scale 0 -i '$i' -v quiet -ac ${channel} -f sox - | sox -p -S -b $bitdepth '${b%.*}_as.${outformat}' ${soxmode} $factor $soxsample" >&2 | tee
   done | parallel "${args[@]}"
 }
 
@@ -523,7 +523,7 @@ downmix() {
   local i
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 "${b%.*}_dm.wav"
+    ffmpeg -drc_scale 0 -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 "${b%.*}_dm.wav"
   done
 }
 
@@ -594,8 +594,8 @@ audiocomp() {
   else
     starttime=(-ss 0)
   fi
-  ffmpeg -y -v quiet -i "$1" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_orig.wav
-  ffmpeg -y -v quiet "${starttime[@]}" -i "$2" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_other.wav
+  ffmpeg -y -v quiet -drc_scale 0 -i "$1" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_orig.wav
+  ffmpeg -y -v quiet -drc_scale 0 "${starttime[@]}" -i "$2" -ac 1 -c:a pcm_s16le -ar 48000 -t 10:00 audiocomp_other.wav
   compare2.exe audiocomp_orig.wav audiocomp_other.wav
   rm audiocomp_*wav
 }
