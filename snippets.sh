@@ -339,7 +339,7 @@ thumbnailgen() {
 imagegen() {
   local images x b i c seconds interval framepos
 
-  images=12
+  images=6
 
   for x in "$@"; do
     b=$(basename "$x")
@@ -348,7 +348,7 @@ imagegen() {
     interval=$(bc <<< "scale=4; $seconds/($images+1)")
     for i in $(seq -f '%03.0f' 1 "$images"); do
       framepos=$(bc <<< "scale=4; $interval*$i")
-      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 -q:v 100 -compression_level 6 "${b%.*}_$i.webp"
+      ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 "${b%.*}_$i.png"
       (( c++ ))
 	    printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
