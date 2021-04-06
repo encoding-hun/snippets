@@ -702,10 +702,12 @@ pvenv() (
 migrateenv() (
   set -e
 
-  tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
+  if ! [[ -f poetry.lock || -f requirements.txt ]]; then
+    tmpfile=$(mktemp /tmp/requirements.XXXXXXXXXX)
 
-  echo "[+] Saving installed packages to $tmpfile"
-  pip freeze >> "$tmpfile"
+    echo "[+] Saving installed packages to $tmpfile"
+    pip freeze >> "$tmpfile"
+  fi
 
   echo '[+] Removing old virtualenv'
   pyenv uninstall -f "${PYENV_VIRTUAL_ENV##*/}"
@@ -713,8 +715,15 @@ migrateenv() (
   pvenv "$1"
 
   echo '[+] Reinstalling packages'
-  pip install -r "$tmpfile"
-  rm -f "$tmpfile"
+
+  if [[ -f poetry.lock ]]; then
+    poetry install
+  elif [[ -f requirements.txt ]]; then
+    pip install -r requirements.txt
+  else
+    pip install -r "$tmpfile"
+    rm -f "$tmpfile"
+  fi
 )
 
 winuptime() { uptime.exe | cut -c22-; }
