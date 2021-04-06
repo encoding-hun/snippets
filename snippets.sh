@@ -576,9 +576,14 @@ femto() {
   fi
 }
 
-# creates a 90 seconds sample from input
-# 90mp-es sample készítése input fájlból
-createsample() { mkvmerge -o sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$1"; }
+# creates a 90 seconds sample from input and saves it in a sample folder next to the input
+# 90mp-es sample készítése input fájlból. az input mellé menti a fájlt egy sample mappába
+createsample() {
+  local i
+  for i in "$@"; do
+    mkvmerge -o "$(dirname $i)"/sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$i"
+  done
+}
 
 # creates two files that compare2.exe can open and opens them
 # you can set a start time for the second source with the third argument
