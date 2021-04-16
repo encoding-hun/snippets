@@ -788,3 +788,12 @@ fixbranch() {
   git branch -u origin/main main
   git remote set-head origin -a
 }
+
+nfocat() {
+  local i
+  for i in "$@"; do
+    iconv -f CP437 -t UTF-8 "$i" -o nfo_temp.txt
+    cat nfo_temp.txt
+    rm nfo_temp.txt
+  done
+}
