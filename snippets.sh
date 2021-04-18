@@ -523,7 +523,7 @@ downmix() {
   local i
   for i in "$@"; do
     b=$(basename "$i")
-    ffmpeg -drc_scale 0 -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-0.1 "${b%.*}_dm.wav"
+    ffmpeg -drc_scale 0 -i "$i" -ac 2 -f sox - | sox -p -S -b 24 --norm=-1 "${b%.*}_dm.wav"
   done
 }
 
