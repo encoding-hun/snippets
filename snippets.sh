@@ -804,3 +804,10 @@ nfocat() {
     rm nfo_temp.txt
   done
 }
+
+createtorrent() {
+  local i
+  for i in "$@"; do
+    mktorrent -l 24 "$i"
+  done
+}
