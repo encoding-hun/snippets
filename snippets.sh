@@ -86,13 +86,19 @@ aacenc() {
 # ffmpeg frissítés
 # updating ffmpeg
 update_ffmpeg() {
+  if [[ $1 == -* ]]; then
+    opt=$1
+    shift
+  fi
+
   type=${1:-release} # release, git
   if [[ $type == 'release' ]]; then
     dir='releases'
   else
     dir='builds'
   fi
-  if [[ $1 != -l && $1 != --local && $(sudo -n -l sh) ]]; then
+
+  if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
     sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
   else
     sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C ~/.local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
