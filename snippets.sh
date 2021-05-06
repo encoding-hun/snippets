@@ -92,7 +92,11 @@ update_ffmpeg() {
   else
     dir='builds'
   fi
-  sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
+  if [[ $1 != -l && $1 != --local && $(sudo -n -l sh) ]]; then
+    sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
+  else
+    sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C ~/.local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
+  fi
 }
 
 # creates spectrograms and uploads them to kek.sh
