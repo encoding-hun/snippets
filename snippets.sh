@@ -727,7 +727,7 @@ migrateenv() (
   echo '[+] Reinstalling packages'
 
   if [[ -f poetry.lock ]]; then
-    poetry install
+    pyenv exec poetry install
   elif [[ -f requirements.txt ]]; then
     pip install -r requirements.txt
   else
