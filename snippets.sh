@@ -586,6 +586,21 @@ femto() {
   fi
 }
 
+# uploads files to x0.at
+# fájlok feltöltése x0.at-re
+envs() {
+  local i b
+  if (( $# == 0 )); then
+    echo "$(curl -s -F "file=@-" "https://envs.sh")"
+  else
+    for i in "$@"; do
+      b=$(basename "$i")
+      printf '%s: ' "$b"
+      echo "$(curl -s -F "file=@${i}" "https://envs.sh")"
+    done
+  fi
+}
+
 # creates a 90 seconds sample from input and saves it in a sample folder next to the input
 # 90mp-es sample készítése input fájlból. az input mellé menti a fájlt egy sample mappába
 createsample() {
