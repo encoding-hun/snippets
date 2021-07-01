@@ -586,8 +586,8 @@ femto() {
   fi
 }
 
-# uploads files to x0.at
-# fájlok feltöltése x0.at-re
+# uploads files to envs.sh
+# fájlok feltöltése envs.sh-re
 envs() {
   local i b
   if (( $# == 0 )); then
