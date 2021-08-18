@@ -836,3 +836,11 @@ createtorrent() {
     mktorrent -l 24 "$i"
   done
 }
+
+rclonesrv() {
+  while true; do
+    for f in ~/.config/rclone/srv*.json; do
+      rclone --drive-service-account-file "$f" --drive-stop-on-upload-limit "$@" && break 2
+    done
+  done
+}
