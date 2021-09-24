@@ -271,7 +271,7 @@ fastgrab() {
 
   auth=("--http-user=${http_user}" "--http-passwd=${http_passwd}")
 
-  aria2c --auto-file-renaming=false --allow-overwrite=true -j 16 -x 16 -s 16 -Z "${auth[@]}" "$@"
+  aria2c --auto-file-renaming=false --allow-overwrite=true --file-allocation=none -j 16 -x 16 -s 16 -Z "${auth[@]}" "$@"
 }
 fastgrabdir() {
   # shellcheck disable=SC2046
