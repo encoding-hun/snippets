@@ -751,6 +751,10 @@ migrateenv() (
   fi
 )
 
+piprmall() {
+  pip freeze | sed -r 's/\s*@.*//g' | xargs pip uninstall -y
+}
+
 winuptime() { uptime.exe | cut -c22-; }
 
 decode_challenge() {
