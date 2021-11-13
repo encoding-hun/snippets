@@ -848,3 +848,22 @@ rclonesrv() {
     done
   done
 }
+
+# run a command at the specified time
+# parancs futtatása a megadott időben
+# example:
+# at 12:00 echo hello
+at() {
+  now=$(date +%s)
+  d=$(date +%s --date="$1")
+
+  if (( now > d )); then
+    d=$(date +%s --date="tomorrow $1")
+  fi
+
+  seconds=$(( d - now ))
+
+  echo "Running in ${seconds}s: ${@:2}"
+  sleep "$seconds"
+  "${@:2}"
+}
