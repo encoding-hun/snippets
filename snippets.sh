@@ -854,9 +854,9 @@ at() {
   "${@:2}"
 }
 
-merging DV and HDR into a single stream
-DV és HDR merge-dzselése egy streambe
-example: dvmerge dv.mkv hdr.mkv
+# merging DV and HDR into a single stream
+# DV és HDR merge-dzselése egy streambe
+# example: dvmerge dv.mkv hdr.mkv
 dvmerge() {
   ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | dovi_tool.exe -m 3 extract-rpu - -o dovi_temp.bin
   dovi_tool.exe inject-rpu -i "$2" --rpu-in dovi_temp.bin -o ${2%.*}_dovi.hevc
