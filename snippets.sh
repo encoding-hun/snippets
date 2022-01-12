@@ -781,20 +781,6 @@ showfunc() {
   declare -f "$1" | sed -r 's/\t/    /g; s/    /  /g' | scat -l sh
 }
 
-sleepuntil() {
-  local t seconds
-  t="$1"
-  if [[ $(($(date -d ${t} +%s) - $(date +%s))) < 0 ]]; then
-    seconds=$(($(date -d "tomorrow ${t}" +%s) - $(date +%s)))
-    echo "sleeping until tomorrow $t ($seconds seconds)"
-    sleep "$seconds"
-  else
-    seconds=$(($(date -d ${t} +%s) - $(date +%s)))
-    echo "sleeping until $t ($seconds seconds)"
-    sleep "$seconds"
-  fi
-}
-
 getranges() {
   local start
   local end
@@ -866,4 +852,18 @@ at() {
   echo "Running in ${seconds}s: ${@:2}"
   sleep "$seconds"
   "${@:2}"
+}
+
+sleepuntil() {
+  local t seconds
+  t="$1"
+  if [[ $(($(date -d ${t} +%s) - $(date +%s))) < 0 ]]; then
+    seconds=$(($(date -d "tomorrow ${t}" +%s) - $(date +%s)))
+    echo "sleeping until tomorrow $t ($seconds seconds)"
+    sleep "$seconds"
+  else
+    seconds=$(($(date -d ${t} +%s) - $(date +%s)))
+    echo "sleeping until $t ($seconds seconds)"
+    sleep "$seconds"
+  fi
 }
