@@ -835,8 +835,8 @@ rclonesrv() {
   done
 }
 
-# run a command at the specified time
-# parancs futtatása a megadott időben
+# run a command at a specified time
+# parancs futtatása egy megadott időben
 # example:
 # at 12:00 echo hello
 at() {
@@ -852,20 +852,6 @@ at() {
   echo "Running in ${seconds}s: ${@:2}"
   sleep "$seconds"
   "${@:2}"
-}
-
-sleepuntil() {
-  local t seconds
-  t="$1"
-  if [[ $(($(date -d ${t} +%s) - $(date +%s))) < 0 ]]; then
-    seconds=$(($(date -d "tomorrow ${t}" +%s) - $(date +%s)))
-    echo "sleeping until tomorrow $t ($seconds seconds)"
-    sleep "$seconds"
-  else
-    seconds=$(($(date -d ${t} +%s) - $(date +%s)))
-    echo "sleeping until $t ($seconds seconds)"
-    sleep "$seconds"
-  fi
 }
 
 merging DV and HDR into a single stream
