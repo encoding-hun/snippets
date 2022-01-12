@@ -858,7 +858,11 @@ at() {
 # DV és HDR merge-dzselése egy streambe
 # example: dvmerge dv.mkv hdr.mkv
 dvmerge() {
-  ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | dovi_tool.exe -m 3 extract-rpu - -o dovi_temp.bin
-  dovi_tool.exe inject-rpu -i "$2" --rpu-in dovi_temp.bin -o ${2%.*}_dovi.hevc
-  rm dovi_temp.bin
+  ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | dovi_tool.exe -m 3 extract-rpu - -o temp_dv.bin
+  mkvextract tracks "$2" 0:temp_hdr.hevc
+  dovi_tool.exe inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv.hevc
+  output=$(echo $(basename "${1%.*}") | sed 's/DV/DV.HDR/')
+  language=$(mkvmerge -F json --identify "$1" | jq -r '.tracks[0].properties.language')
+  mkvmerge -o "$output".mkv --title "$output" --language 0:"$language" temp_dv.hevc -D "$1"
+  rm temp_dv* temp_hdr*
 }
