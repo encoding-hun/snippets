@@ -344,8 +344,8 @@ thumbnailgen() {
   rm -rf thumb_temp
 }
 
-# generates 12 images for each source
-# 12 képet generál minden megadott forráshoz
+# generates 6 images for each source
+# 6 képet generál minden megadott forráshoz
 imagegen() {
   local images x b i c seconds interval framepos
 
