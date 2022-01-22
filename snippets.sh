@@ -543,7 +543,7 @@ findforced() { grep -P -C2 '\b[A-Z]{2,}\b|♪' "$1"; }
 
 # downloads dub links from list.txt
 # szinkronok letöltése list.txt-ből
-grabdub() { wget -i list.txt -P out -q --show-progress --trust-server-names --content-disposition --load-cookies cookies.txt; }
+grabdub() { wget -i "$1" -P out -q --show-progress --trust-server-names --content-disposition --load-cookies "$2"; }
 
 # uploads images to kek.sh
 # képek feltöltése kek.sh-ra
