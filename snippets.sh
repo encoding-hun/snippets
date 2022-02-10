@@ -863,6 +863,13 @@ dvmerge() {
     echo "ERROR: dovi_tool not found" >&2
     return 1
   fi
+
+  if [[ $# -ne 2 ]]; then
+    echo "ERROR: Not enough arguments" >&2
+    echo "Usage: dvmerge dv.mkv hdr.mkv" >&2
+    return 1
+  fi
+
   ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" -m 3 extract-rpu - -o temp_dv.bin
   mkvextract tracks "$2" 0:temp_hdr.hevc
   "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv.hevc
