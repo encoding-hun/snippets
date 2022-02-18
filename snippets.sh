@@ -271,7 +271,14 @@ fastgrab() {
 
   auth=("--http-user=${http_user}" "--http-passwd=${http_passwd}")
 
-  aria2c --auto-file-renaming=false --allow-overwrite=true --file-allocation=none -j 16 -x 16 -s 16 -Z "${auth[@]}" "$@"
+  local connections=128
+  aria2c -x "$connections" &>/dev/null
+  if [[ $? == 28 ]]; then
+    # Unmodified aria2c build, can't handle more than 16 connections
+    connections=16
+  fi
+
+  aria2c --auto-file-renaming=false --allow-overwrite=true --file-allocation=none -j "$connections" -x "$connections" -s "$connections" -Z "${auth[@]}" "$@"
 }
 fastgrabdir() {
   # shellcheck disable=SC2046
