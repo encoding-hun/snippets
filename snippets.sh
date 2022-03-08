@@ -866,3 +866,13 @@ dvmerge() {
   mkvmerge -o "$output".mkv --title "$output" --language 0:"$language" temp_dv.hevc -D "$1"
   rm temp_dv* temp_hdr*
 }
+
+# remount Windows drive letters to /mnt/...
+# Windows betűjelek újramountolása /mnt/... alá
+remount() {
+  lower=$(echo ${1} | tr '[:upper:]' '[:lower:]')
+  upper=$(echo ${1} | tr '[:lower:]' '[:upper:]')
+  sudo umount /mnt/${lower}
+  sudo mkdir -p /mnt/${lower}
+  sudo mount -t drvfs ${upper}: /mnt/${lower}
+}
