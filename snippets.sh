@@ -578,21 +578,6 @@ x0() {
   fi
 }
 
-# uploads files to femto.pw
-# fájlok feltöltése femto.pw-re
-femto() {
-  local i b
-  if (( $# == 0 )); then
-    curl -s -F "upload=@-" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"'
-  else
-    for i in "$@"; do
-      b=$(basename "$i")
-      printf '%s: ' "$b"
-      curl -s -F "upload=@$i" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"'
-    done
-  fi
-}
-
 # uploads files to envs.sh
 # fájlok feltöltése envs.sh-re
 envs() {
