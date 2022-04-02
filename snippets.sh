@@ -690,6 +690,12 @@ update_pip() {
   pip install --upgrade pip setuptools wheel
 }
 
+# install / update poetry to the latest version
+# poetry telepítése / frissítése a legújabb verzióra
+update_poetry() {
+  curl -fsSL https://install.python-poetry.org | python3 - "$@"
+}
+
 # create pyenv virtualenv using global version or specified one
 # pyenv virtualenv létrehozása globális vagy adott verzióval
 # examples:
