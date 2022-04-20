@@ -862,9 +862,15 @@ dvmerge() {
     return 1
   fi
 
-  if [[ $# -ne 2 ]]; then
+  if [[ $# -lt 2 ]]; then
     echo "ERROR: Not enough arguments" >&2
-    echo "Usage: dvmerge dv.mkv hdr.mkv" >&2
+    echo "Usage: dvmerge dv.mkv hdr.mkv [dv.hdr.mkv]" >&2
+    return 1
+  fi
+
+  if [[ $# -gt 3 ]]; then
+    echo "ERROR: Too many arguments" >&2
+    echo "Usage: dvmerge dv.mkv hdr.mkv [dv.hdr.mkv]" >&2
     return 1
   fi
 
