@@ -568,27 +568,12 @@ keksh() {
 x0() {
   local i b
   if (( $# == 0 )); then
-    echo "$(curl -s -F "file=@-" "https://x0.at")"
+    curl -s -F "file=@-" "https://x0.at"
   else
     for i in "$@"; do
       b=$(basename "$i")
       printf '%s: ' "$b"
-      echo "$(curl -s -F "file=@${i}" "https://x0.at")"
-    done
-  fi
-}
-
-# uploads files to femto.pw
-# fájlok feltöltése femto.pw-re
-femto() {
-  local i b
-  if (( $# == 0 )); then
-    echo "$(curl -s -F "upload=@-" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
-  else
-    for i in "$@"; do
-      b=$(basename "$i")
-      printf '%s: ' "$b"
-      echo "$(curl -s -F "upload=@$i" -F "apiKey=$FEMTO_API_KEY" https://v2.femto.pw/upload | jq -r '"https://femto.pw/\(.data.short)"')"
+      curl -s -F "file=@${i}" "https://x0.at"
     done
   fi
 }
@@ -598,12 +583,12 @@ femto() {
 envs() {
   local i b
   if (( $# == 0 )); then
-    echo "$(curl -s -F "file=@-" "https://envs.sh")"
+    curl -s -F "file=@-" "https://envs.sh"
   else
     for i in "$@"; do
       b=$(basename "$i")
       printf '%s: ' "$b"
-      echo "$(curl -s -F "file=@${i}" "https://envs.sh")"
+      curl -s -F "file=@${i}" "https://envs.sh"
     done
   fi
 }
@@ -613,7 +598,7 @@ envs() {
 createsample() {
   local i
   for i in "$@"; do
-    mkvmerge -o "$(dirname $i)"/sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$i"
+    mkvmerge -o "$(dirname "$i")"/sample/sample.mkv --title sample --split parts:00:05:00-00:06:30 "$i"
   done
 }
 
@@ -703,6 +688,12 @@ getchannels() {
 # pip, setuptools és wheel telepítése / frissítése a legújabb verzióra
 update_pip() {
   pip install --upgrade pip setuptools wheel
+}
+
+# install / update poetry to the latest version
+# poetry telepítése / frissítése a legújabb verzióra
+update_poetry() {
+  curl -fsSL https://install.python-poetry.org | python3 - "$@"
 }
 
 # create pyenv virtualenv using global version or specified one
@@ -856,7 +847,7 @@ at() {
 
   seconds=$(( d - now ))
 
-  echo "Running in ${seconds}s: ${@:2}"
+  echo "Running in ${seconds}s: ${*:2}"
   sleep "$seconds"
   "${@:2}"
 }
@@ -871,16 +862,23 @@ dvmerge() {
     return 1
   fi
 
-  if [[ $# -ne 2 ]]; then
+  if [[ $# -lt 2 ]]; then
     echo "ERROR: Not enough arguments" >&2
-    echo "Usage: dvmerge dv.mkv hdr.mkv" >&2
+    echo "Usage: dvmerge dv.mkv hdr.mkv [dv.hdr.mkv]" >&2
+    return 1
+  fi
+
+  if [[ $# -gt 3 ]]; then
+    echo "ERROR: Too many arguments" >&2
+    echo "Usage: dvmerge dv.mkv hdr.mkv [dv.hdr.mkv]" >&2
     return 1
   fi
 
   ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" -m 3 extract-rpu - -o temp_dv.bin
   mkvextract tracks "$2" 0:temp_hdr.hevc
   "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv.hevc
-  output=$(echo $(basename "${1%.*}") | sed 's/DV/DV.HDR/')
+  output=${3:-$(basename "${1%.*}" | sed 's/DV/DV.HDR/; s/DoVi/DoVi.HDR/')}
+  output=${output%.mkv}
   language=$(mkvmerge -F json --identify "$1" | jq -r '.tracks[0].properties.language')
   mkvmerge -o "$output".mkv --title "$output" --language 0:"$language" temp_dv.hevc -D "$1"
   rm temp_dv* temp_hdr*
@@ -889,9 +887,9 @@ dvmerge() {
 # remount Windows drive letters to /mnt/...
 # Windows betűjelek újramountolása /mnt/... alá
 remount() {
-  lower=$(echo ${1} | tr '[:upper:]' '[:lower:]')
-  upper=$(echo ${1} | tr '[:lower:]' '[:upper:]')
-  sudo umount /mnt/${lower}
-  sudo mkdir -p /mnt/${lower}
-  sudo mount -t drvfs ${upper}: /mnt/${lower}
+  lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+  upper=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+  sudo umount "/mnt/$lower"
+  sudo mkdir -p "/mnt/$lower"
+  sudo mount -t drvfs "$upper:" "/mnt/$lower"
 }
