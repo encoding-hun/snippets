@@ -134,7 +134,7 @@ EOF
 
   shift "$((OPTIND - 1))"
 
-  if [[ $channel != 6 && $channel != 2 ]]; then
+  if [[ $channel != 2 && $channel != 6 && $channel != 8 ]]; then
     echo "ERROR: Unsupported channel number." >&2; return 1
   fi
 
