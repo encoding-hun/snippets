@@ -116,7 +116,7 @@ Usage: spec -c [channel] [input(s)]
   (they will be decoded with ffmpeg)
 
 Options:
-  -c [channel]   Sets number of channels. [2/6]
+  -c [channel]   Sets number of channels. [1/2/6/8]
 
 Examples:
   spec *wav
@@ -134,7 +134,7 @@ EOF
 
   shift "$((OPTIND - 1))"
 
-  if [[ $channel != 2 && $channel != 6 && $channel != 8 ]]; then
+  if [[ $channel != 1 && $channel != 2 && $channel != 6 && $channel != 8 ]]; then
     echo "ERROR: Unsupported channel number." >&2; return 1
   fi
 
