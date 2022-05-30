@@ -893,3 +893,14 @@ remount() {
   sudo mkdir -p "/mnt/$lower"
   sudo mount -t drvfs "$upper:" "/mnt/$lower"
 }
+
+createicon() {
+  mkdir icon_temp
+  for i in "$@"; do
+    for r in 16 20 24 32 40 48 64 72 96 128 256; do
+      convert "$i" -resize "$r"x"$r" icon_temp/"$r".png
+    done
+    convert icon_temp/16.png icon_temp/20.png icon_temp/24.png icon_temp/32.png icon_temp/40.png icon_temp/48.png icon_temp/64.png icon_temp/72.png icon_temp/96.png icon_temp/128.png icon_temp/256.png "${i%.*}.ico"
+  done
+  rm -rf icon_temp
+}
