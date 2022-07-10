@@ -589,6 +589,19 @@ envs() {
   fi
 }
 
+ovpnto() {
+  local i b
+  if (( $# == 0 )); then
+    curl -s -4 -F "fileToUpload=@-" -F "output=plain" -F "expire=1209600" -F "maxhits=0" https://up.ovpn.to/upload | sed -n '5,5p' | awk -v N=3 '{print $N}'
+  else
+    for i in "$@"; do
+      b=$(basename "$i")
+      printf '%s: ' "$b"
+      curl -s -4 -F "fileToUpload=@$i" -F "output=plain" -F "expire=1209600" -F "maxhits=0" https://up.ovpn.to/upload | sed -n '5,5p' | awk -v N=3 '{print $N}'
+    done
+  fi
+}
+
 # creates a 90 seconds sample from input and saves it in a sample folder next to the input
 # 90mp-es sample készítése input fájlból. az input mellé menti a fájlt egy sample mappába
 createsample() {
