@@ -719,6 +719,12 @@ update_vt() {
   poetry install
 }
 
+# update outdated Python libraries
+# Python library-k frissítése
+update_libs() {
+  pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install --upgrade
+}
+
 # create pyenv virtualenv using global version or specified one
 # pyenv virtualenv létrehozása globális vagy adott verzióval
 # examples:
