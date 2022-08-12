@@ -722,7 +722,13 @@ update_vt() {
 # update outdated Python libraries
 # Python library-k frissítése
 update_libs() {
-  pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install --upgrade
+  local up
+  up=$(pip list --outdated)
+  if [[ -z "$up" ]]; then
+    echo "Nothing to update!"
+  else
+    echo "$up" | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install --upgrade
+  fi
 }
 
 # create pyenv virtualenv using global version or specified one
