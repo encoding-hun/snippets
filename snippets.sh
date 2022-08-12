@@ -705,6 +705,20 @@ update_poetry() {
   curl -fsSL https://install.python-poetry.org | python3 - "$@"
 }
 
+# install / update deew to the latest version
+# deew telepítése / frissítése a legújabb verzióra
+update_deew() {
+  pip install deew --upgrade
+}
+
+# install / update to the latest version
+# telepítés / frissítés a legújabb verzióra
+update_vt() {
+  git pull
+  git submodule update --init
+  poetry install
+}
+
 # create pyenv virtualenv using global version or specified one
 # pyenv virtualenv létrehozása globális vagy adott verzióval
 # examples:
