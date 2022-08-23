@@ -144,6 +144,7 @@ EOF
       sox spec_temp.w64 -n spectrogram -x 1776 -Y 1080 -o "${b%.*}.png"
     fi
     curl -fsSL https://kek.sh/api/v1/posts -F file="@${b%.*}.png" | jq -r '"https://i.kek.sh/\(.filename)"'
+    rm -f "${b%.*}.png"
   done
   rm -f spec_temp.w64
 }
