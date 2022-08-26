@@ -940,3 +940,17 @@ createicon() {
   done
   rm -rf icon_temp
 }
+
+update_hdr10plus_tool() {
+  url=$(curl -s https://api.github.com/repos/quietvoid/hdr10plus_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("linux-musl.tar.gz"))') &&
+  curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
+  echo Update successful
+  hdr10plus_tool --version
+}
+
+update_dovi_tool() {
+  url=$(curl -s https://api.github.com/repos/quietvoid/dovi_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("linux-musl.tar.gz"))') &&
+  curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
+  echo Update successful
+  dovi_tool --version
+}
