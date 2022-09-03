@@ -703,6 +703,7 @@ update_pip() {
 # install / update poetry to the latest version
 # poetry telepítése / frissítése a legújabb verzióra
 update_poetry() {
+  pip uninstall -qq -y poetry  # remove other versions of poetry
   curl -fsSL https://install.python-poetry.org | python3 - "$@"
 }
 
