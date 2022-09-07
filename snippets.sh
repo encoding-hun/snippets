@@ -707,6 +707,13 @@ update_poetry() {
   curl -fsSL https://install.python-poetry.org | python3 - "$@"
 }
 
+# update poetry virtualenv to a specific version from pyenv
+# poetry virtualenv frissítése megadott verzióra pyenv-ből
+poetry_use() {
+  poetry env use ~/.pyenv/versions/"$1"/bin/python
+  poetry install "${@:2}"
+}
+
 # install / update deew to the latest version
 # deew telepítése / frissítése a legújabb verzióra
 update_deew() {
