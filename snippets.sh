@@ -916,7 +916,7 @@ dvcrop() {
   mkvextract tracks "$1" 0:temp_dv.hevc
   dovi_tool demux temp_dv.hevc -b temp_hdr.hevc
   "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv_cropped.hevc
-  output=${2:${1%.mkv}.cropped}
+  output=${2:-${1%.mkv}.cropped}
   output=${output%.mkv}
   language=$(mkvmerge -F json --identify "$1" | jq -r '.tracks[0].properties.language')
   mkvmerge -o "$output".mkv --title "$output" --language 0:"$language" temp_dv_cropped.hevc -D "$1"
