@@ -896,6 +896,33 @@ at() {
   "${@:2}"
 }
 
+# crop RPU on an existing DV or DV.HDR file
+# RPU cropolása meglévő DV vagy DV.HDR fájlon
+# example: dvcrop dvhdr.mkv
+dvcrop() {
+  if [[ $# -lt 1 ]]; then
+    echo "ERROR: Not enough arguments" >&2
+    echo "Usage: dvcrop input.mkv [output.mkv]" >&2
+    return 1
+  fi
+
+  if [[ $# -gt 2 ]]; then
+    echo "ERROR: Too many arguments" >&2
+    echo "Usage: dvcrop input.mkv [output.mkv]" >&2
+    return 1
+  fi
+
+  ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" "${args[@]}" -m 0 extract-rpu - -o temp_dv_cropped.bin
+  mkvextract tracks "$1" 0:temp_dv.hevc
+  dovi_tool demux temp_dv.hevc -b temp_hdr.hevc
+  "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv_cropped.hevc
+  output=${2:${1%.mkv}.cropped}
+  output=${output%.mkv}
+  language=$(mkvmerge -F json --identify "$1" | jq -r '.tracks[0].properties.language')
+  mkvmerge -o "$output".mkv --title "$output" --language 0:"$language" temp_dv_cropped.hevc -D "$1"
+  rm temp_dv* temp_hdr*
+}
+
 # merging DV and HDR into a single stream
 # DV és HDR merge-dzselése egy streambe
 # example: dvmerge dv.mkv hdr.mkv
