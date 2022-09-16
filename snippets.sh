@@ -900,6 +900,11 @@ at() {
 # DV és HDR merge-dzselése egy streambe
 # example: dvmerge dv.mkv hdr.mkv
 dvmerge() {
+  local args=()
+  if [[ $1 == -c || $1 == --crop ]]; then
+    args+=(--crop)
+  fi
+
   dovi_tool=$(command -v dovi_tool.exe || command -v dovi_tool)
   if [[ -z "$dovi_tool" ]]; then
     echo "ERROR: dovi_tool not found" >&2
@@ -918,7 +923,7 @@ dvmerge() {
     return 1
   fi
 
-  ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" -m 3 extract-rpu - -o temp_dv.bin
+  ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" "${args[@]}" -m 3 extract-rpu - -o temp_dv.bin
   mkvextract tracks "$2" 0:temp_hdr.hevc
   "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv.hevc
   output=${3:-$(basename "${1%.*}" | sed 's/DV/DV.HDR/; s/DoVi/DoVi.HDR/')}
