@@ -928,8 +928,11 @@ dvcrop() {
 # example: dvmerge dv.mkv hdr.mkv
 dvmerge() {
   local args=()
+  local crop=0
+
   if [[ $1 == -c || $1 == --crop ]]; then
     args+=(--crop)
+    crop=1
   fi
 
   dovi_tool=$(command -v dovi_tool.exe || command -v dovi_tool)
@@ -953,7 +956,7 @@ dvmerge() {
   dv_res=$(mediainfo --Output=JSON "$1" | jq  -r '[.media.track[] | select(.["@type"] == "Video")][0] | "\(.Width)x\(.Height)"')
   hdr_res=$(mediainfo --Output=JSON "$2" | jq  -r '[.media.track[] | select(.["@type"] == "Video")][0] | "\(.Width)x\(.Height)"')
 
-  if [[ "$dv_res" != "$hdr_res" ]]; then
+  if [[ "$dv_res" != "$hdr_res" ]] && ! (( crop )); then
     echo "ERROR: Resolutions are different (DV: $dv_res, HDR: $hdr_res), cannot merge." >&2
     return 1
   fi
