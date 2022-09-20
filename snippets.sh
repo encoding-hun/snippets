@@ -950,6 +950,14 @@ dvmerge() {
     return 1
   fi
 
+  dv_res=$(mediainfo --Output=JSON "$1" | jq  -r '[.media.track[] | select(.["@type"] == "Video")][0] | "\(.Width)x\(.Height)"')
+  hdr_res=$(mediainfo --Output=JSON "$2" | jq  -r '[.media.track[] | select(.["@type"] == "Video")][0] | "\(.Width)x\(.Height)"')
+
+  if [[ "$dv_res" != "$hdr_res" ]]; then
+    echo "ERROR: Resolutions are different (DV: $dv_res, HDR: $hdr_res), cannot merge." >&2
+    return 1
+  fi
+
   ffmpeg -i "$1" -map 0:v:0 -c:v copy -vbsf hevc_mp4toannexb -f hevc - | "$dovi_tool" "${args[@]}" -m 3 extract-rpu - -o temp_dv.bin
   mkvextract tracks "$2" 0:temp_hdr.hevc
   "$dovi_tool" inject-rpu -i temp_hdr.hevc --rpu-in temp_dv.bin -o temp_dv.hevc
