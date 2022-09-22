@@ -1005,3 +1005,9 @@ update_dovi_tool() {
   echo Update successful
   dovi_tool --version
 }
+
+# edit a YAML file
+# YAML fájl szerkesztése
+yamledit() {
+  yq -iyY --yml-out-ver=1.2 "$@"
+}
