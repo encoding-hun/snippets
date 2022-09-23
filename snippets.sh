@@ -933,6 +933,7 @@ dvmerge() {
   if [[ $1 == -c || $1 == --crop ]]; then
     args+=(--crop)
     crop=1
+    shift
   fi
 
   dovi_tool=$(command -v dovi_tool.exe || command -v dovi_tool)
