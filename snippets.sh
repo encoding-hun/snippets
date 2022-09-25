@@ -1012,3 +1012,22 @@ update_dovi_tool() {
 yamledit() {
   yq -iyY --yml-out-ver=1.2 "$@"
 }
+
+# send notification to Telegram
+# értesítés küldése Telegramra
+tgnotify() (
+  # shellcheck disable=SC1090
+  source ~/.config/tgnotify/config || return
+
+  if [[ -z "$TG_BOT_TOKEN" ]]; then
+    echo "ERROR: Missing TG_BOT_TOKEN" >&2
+    return 1
+  fi
+
+  if [[ -z "$TG_CHAT_ID" ]]; then
+    echo "ERROR: Missing TG_CHAT_ID" >&2
+    return 1
+  fi
+
+  curl -fsSL -o /dev/null "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" -d "chat_id=${TG_CHAT_ID}" -d text="$*" -d "parse_mode=markdown"
+)
