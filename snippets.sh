@@ -820,7 +820,18 @@ scat() {
 }
 
 showfunc() {
-  declare -f "$1" | sed -r 's/\t/    /g; s/    /  /g' | scat -l sh
+  local body
+
+  if [[ $0 == *bash* ]]; then
+    body=${BASH_ALIASES[$1]}
+    if [[ -z "$body" ]]; then
+      body=$(declare -f "$1")
+    fi
+  else  # zsh
+    body=$(whence -f "$1")
+  fi
+
+  printf '%s\n' "$body" | sed -r 's/\t/    /g; s/    /  /g' | scat -l sh
 }
 
 getranges() {
