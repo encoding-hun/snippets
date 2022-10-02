@@ -6,24 +6,24 @@ The snippets in this repository aim to be compatible with both bash and zsh.
 If this is not the case, or you have any suggestions, please open an issue.
 
 ## Requirements
-- mkvtoolnix
-- qaac64.exe
-- parallel
-- ffmpeg
-- sox
-- curl
-- x264.exe
-- lynx
 - aria2c
-- ImageMagick
 - compare2.exe
-- mediainfo
-- pyenv
-- uptime.exe
-- pygmentize
-- mktorrent
-- rclone
+- curl
 - dovi_tool.exe
+- ffmpeg
+- ImageMagick
+- lynx
+- mediainfo
+- mktorrent
+- mkvtoolnix
+- parallel
+- pyenv
+- pygmentize
+- qaac64.exe
+- rclone
+- sox
+- uptime.exe
+- x264.exe
 
 ## Installation
 ```sh
