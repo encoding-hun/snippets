@@ -28,7 +28,7 @@ if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/$shell" ]]; then
   snippets_file="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/snippets"
 else
   rcfile="$HOME/.${shell}rc"
-  snippets_file="$HOME/.${shell}csnippets"
+  snippets_file="$HOME/.${shell}_snippets"
 fi
 
 needs_source=1
