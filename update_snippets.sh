@@ -23,8 +23,13 @@ printf 'Updating snippets...\n' >&2
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/snippets.XXXXXXXXXX")
 curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/main/snippets.sh -o "$tmpfile"
 
-rcfile="$HOME/.${shell}rc"
-snippets_file="$HOME/.${shell}_snippets"
+if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/$shell" ]]; then
+  rcfile="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/${shell}rc"
+  snippets_file="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/snippets"
+else
+  rcfile="$HOME/.${shell}rc"
+  snippets_file="$HOME/.${shell}csnippets"
+fi
 
 needs_source=1
 
