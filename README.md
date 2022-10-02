@@ -9,7 +9,7 @@ If this is not the case, or you have any suggestions, please open an issue.
 - aria2c
 - compare2.exe
 - curl
-- dovi_tool.exe
+- dovi_tool
 - ffmpeg
 - ImageMagick
 - lynx
