@@ -25,7 +25,7 @@ curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/main/snippets.s
 
 if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/$shell" ]]; then
   rcfile="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/${shell}rc"
-  snippets_file="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/snippets"
+  snippets_file="${XDG_CONFIG_HOME:-$HOME/.config}/$shell/snippets.${shell}"
 else
   rcfile="$HOME/.${shell}rc"
   snippets_file="$HOME/.${shell}_snippets"
