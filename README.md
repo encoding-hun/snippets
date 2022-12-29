@@ -27,7 +27,7 @@ If this is not the case, or you have any suggestions, please open an issue.
 
 ## Installation
 ```sh
-curl -fsSL git.io/JJDtd | bash
+curl -fsSL bit.ly/3WTfeHQ | bash
 ```
 
 ## Updating
