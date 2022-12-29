@@ -1042,3 +1042,11 @@ tgnotify() (
 
   curl -fsSL -o /dev/null "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" -d "chat_id=${TG_CHAT_ID}" -d text="$*" -d "parse_mode=markdown"
 )
+
+scu() {
+  systemctl --user "$@"
+}
+
+sc() {
+  systemctl "$@"
+}
