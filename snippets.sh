@@ -4,7 +4,7 @@
 # snippetek frissítése
 update_snippets() {
   local file
-  file=$(curl -fsSL https://raw.githubusercontent.com/nyuszika7h/snippets/main/update_snippets.sh | bash -s - --selfupdate)
+  file=$(curl -fsSL https://raw.githubusercontent.com/encoding-hun/snippets/main/update_snippets.sh | bash -s - --selfupdate)
   if [[ -n "$file" ]]; then
     printf 'Sourcing %s\n' "$file"
     # shellcheck disable=SC1090
