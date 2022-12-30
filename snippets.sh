@@ -282,27 +282,27 @@ fastgrabdir() {
   fastgrab $(getlinks "$1")
 }
 
-# ISO-8859-2 (Latin-2) to UTF-8 subtitle conversion, converted files will be in the "utf8" folder.
-# ISO-8859-2 (Latin-2) feliratok UTF-8-ra konvertálása, a konvertált fájlok az "utf8" mappában lesznek.
-# latin2toutf8 [input]
-# latin2toutf8 xy.srt / latin2toutf8 *.srt
-latin2toutf8() {
+# ANSI to UTF-8 subtitle conversion, converted files will be in the "utf8" folder.
+# ANSI feliratok UTF-8-ra konvertálása, a konvertált fájlok az "utf8" mappában lesznek.
+# ansitoutf8 [input]
+# ansitoutf8 xy.srt / latin2toutf8 *.srt
+ansitoutf8() {
   local i
   mkdir -p utf8
   for i in "$@"; do
-    iconv -f iso-8859-2 -t utf-8 "$i" -o utf8/"$i"
+    iconv -f windows-1250 -t utf-8 "$i" -o utf8/"$i"
   done
 }
 
-# UTF-8 to ISO-8859-2 (Latin-2) subtitle conversion, converted files will be in the "latin2" folder.
-# UTF-8 feliratok ISO-8859-2-re (Latin-2) konvertálása, a konvertált fájlok az "latin2" mappában lesznek.
-# utf8tolatin2 [input]
-# utf8tolatin2 xy.srt / latin2toutf8 *.srt
-utf8tolatin2() {
+# UTF-8 to ANSI subtitle conversion, converted files will be in the "ansi" folder.
+# UTF-8 feliratok ANSI-ra konvertálása, a konvertált fájlok az "ansi" mappában lesznek.
+# utf8toansi [input]
+# utf8toansi xy.srt / latin2toutf8 *.srt
+utf8toansi() {
   local i
-  mkdir -p latin2
+  mkdir -p ansi
   for i in "$@"; do
-    iconv -f utf-8 -t iso-8859-2 "$i" -o latin2/"$i"
+    iconv -f utf-8 -t windows-1250 "$i" -o ansi/"$i"
   done
 }
 
