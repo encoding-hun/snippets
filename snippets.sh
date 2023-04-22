@@ -1050,3 +1050,15 @@ scu() {
 sc() {
   systemctl "$@"
 }
+
+rename() {
+  search="$1"
+  replace="$2"
+  shift 2
+  for file in "$@"; do
+      newname=$(echo "$file" | sed "$search")
+      if [ "$newname" != "$file" ]; then
+          mv "$file" "$replace"
+      fi
+  done
+}
