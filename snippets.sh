@@ -1051,7 +1051,11 @@ sc() {
   systemctl "$@"
 }
 
-rename() {
+rn() {
+  if [ "$#" -lt 2 ]; then
+      echo -e "Usage: \033[0;36mrename 's/from/to/' file(s)\033"
+      return 1
+  fi
   search="$1"
   replace="$2"
   shift 2
