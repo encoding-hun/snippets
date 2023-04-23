@@ -1053,16 +1053,20 @@ sc() {
 
 rn() {
   if [ "$#" -lt 2 ]; then
-      echo -e "Usage: \033[0;36mrename 's/from/to/' file(s)\033"
-      return 1
+    echo -e "Usage: \033[0;36mrn 's/from/to/' file(s)\033[0m\nExample: \033[0;36mrn 's/-pcroland//' *.txt\033[0m"
+    return 1
   fi
+
   search="$1"
   replace="$2"
-  shift 2
+  from=$(echo "$search" | sed 's#s/\([^/]*\)/.*#\1#')
+  shift 1
+
   for file in "$@"; do
-      newname=$(echo "$file" | sed "$search")
-      if [ "$newname" != "$file" ]; then
-          mv "$file" "$replace"
-      fi
+    newname=$(echo "$file" | sed "$search")
+    if [ "$newname" != "$file" ]; then
+      mv "$file" "$newname"
+      printf "renaming \033[0;36m%s\033[0m -> \033[0;35m%s\033[0m...\n" "$(echo "$file" | sed "s/$from/$(printf '\033[0;35m')&$(printf '\033[0;36m')/g")" "$newname"
+    fi
   done
 }
