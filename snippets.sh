@@ -1053,8 +1053,7 @@ sc() {
 
 rn() {
   if [ "$#" -lt 2 ]; then
-    echo -e "Usage: \033[0;36mrn 's/from/to/' file(s)\033[0m\nExample: \033[0;36mrn 's/-pcroland//' *.txt\033[0m"
-    return 1
+    echo "Usage: \033[0;36mrn 's/from/to/' file(s)"; return 1
   fi
 
   search="$1"
