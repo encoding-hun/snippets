@@ -101,6 +101,7 @@ update_ffmpeg() {
   fi
 }
 
+
 # creates spectrograms and uploads them to kek.sh
 # spectrogramok létrehozása és feltöltése kek.sh-ra
 spec() {
@@ -1004,6 +1005,8 @@ createicon() {
   rm -rf icon_temp
 }
 
+# hdr10plus_tool frissítés
+# updating hdr10plus_tool
 update_hdr10plus_tool() {
   url=$(curl -s https://api.github.com/repos/quietvoid/hdr10plus_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("linux-musl.tar.gz"))') &&
   curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
@@ -1011,6 +1014,8 @@ update_hdr10plus_tool() {
   hdr10plus_tool --version
 }
 
+# dovi_tool frissítés
+# updating dovi_tool
 update_dovi_tool() {
   url=$(curl -s https://api.github.com/repos/quietvoid/dovi_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("linux-musl.tar.gz"))') &&
   curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
@@ -1068,4 +1073,25 @@ rn() {
       printf "renaming \033[0;36m%s\033[0m -> \033[0;35m%s\033[0m...\n" "$(echo "$file" | sed "s/$from/$(printf '\033[0;35m')&$(printf '\033[0;36m')/g")" "$newname"
     fi
   done
+}
+
+# hola-proxy frissítés
+# updating hola-proxy
+update_hola_proxy() {
+  if [[ $1 == -* ]]; then
+    opt=$1
+    shift
+  fi
+
+  url="https://github.com/Snawoot/hola-proxy/releases/latest/download/hola-proxy.linux-amd64"
+
+  if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
+    sudo sh -c "curl -sL "$url" >> /usr/local/bin/hola-proxy"
+    sudo chmod +x /usr/local/bin/hola-proxy
+  else
+    curl -sL "$url" >> ~/.local/bin/hola-proxy
+    chmod +x ~/.local/bin/hola-proxy
+  fi
+
+  echo Successfully updated to $(hola-proxy -version)
 }
