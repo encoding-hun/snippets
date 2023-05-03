@@ -101,7 +101,6 @@ update_ffmpeg() {
   fi
 }
 
-
 # creates spectrograms and uploads them to kek.sh
 # spectrogramok létrehozása és feltöltése kek.sh-ra
 spec() {
