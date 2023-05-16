@@ -1094,3 +1094,7 @@ update_hola_proxy() {
 
   echo Successfully updated to $(hola-proxy -version)
 }
+
+myip() {
+  curl -s ipinfo.io/json | jq
+}
