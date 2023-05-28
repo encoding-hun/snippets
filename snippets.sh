@@ -1095,6 +1095,14 @@ update_hola_proxy() {
   echo Successfully updated to $(hola-proxy -version)
 }
 
+# show ip address
+# ip cím kiírása
 myip() {
   curl -s ipinfo.io/json | jq
+}
+
+# fix env variable after sudo su login
+# env variable javítása sudo su login után
+fixlogin() {
+  export XDG_RUNTIME_DIR=/run/user/$(id -u)
 }
