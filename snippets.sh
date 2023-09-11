@@ -1074,8 +1074,8 @@ rn() {
   done
 }
 
-# hola-proxy frissítés
-# updating hola-proxy
+# hola-proxy telepítése vagy frissítés
+# installing or updating hola-proxy
 update_hola_proxy() {
   if [[ $1 == -* ]]; then
     opt=$1
@@ -1085,9 +1085,15 @@ update_hola_proxy() {
   url="https://github.com/Snawoot/hola-proxy/releases/latest/download/hola-proxy.linux-amd64"
 
   if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
+    if [ -f "/usr/local/bin/hola-proxy" ]; then
+      sudo rm /usr/local/bin/hola-proxy
+    fi
     sudo sh -c "curl -sL "$url" >> /usr/local/bin/hola-proxy"
     sudo chmod +x /usr/local/bin/hola-proxy
   else
+    if [ -f "~/.local/bin/hola-proxy" ]; then
+      rm ~/.local/bin/hola-proxy
+    fi
     curl -sL "$url" >> ~/.local/bin/hola-proxy
     chmod +x ~/.local/bin/hola-proxy
   fi
