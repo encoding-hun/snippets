@@ -1112,3 +1112,13 @@ myip() {
 fixlogin() {
   export XDG_RUNTIME_DIR=/run/user/$(id -u)
 }
+
+# get source code of snippet
+# snippet forráskódjának kiírása
+getsnippet() {
+  if command -v bat &> /dev/null; then
+    where "$1" | bat -pP -l bash
+  else
+    where "$1"
+  fi
+}
