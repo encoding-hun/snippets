@@ -339,7 +339,7 @@ thumbnailgen() {
       framepos=$(bc <<< "scale=4; $interval*$i")
       timestamp=$(date -d"@$framepos" -u +%H\\:%M\\:%S)
       ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 -vf "scale=$(( width / tilex )):-1, drawtext=fontsize=14:box=1:boxcolor=black:boxborderw=3:fontcolor=white:x=8:y=H-th-8:text='${timestamp}'" "thumb_temp/$i.bmp"
-	  (( c++ ))
+      (( c++ ))
       printf '\rImages: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
     montage thumb_temp/*bmp -tile "$tilex"x"$tiley" -geometry +"$border"+"$border" "${b%.*}_thumbnail.png"
@@ -364,7 +364,7 @@ imagegen() {
       framepos=$(bc <<< "scale=4; $interval*$i")
       ffmpeg -y -v quiet -ss "$framepos" -i "$x" -frames:v 1 "${b%.*}_$i.png"
       (( c++ ))
-	    printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
+      printf '\rSaving images: %02d%% [%d/%d]' "$(bc <<< "$i*100/$images")" "$c" "$images"
     done
   done
   printf '\n'
@@ -873,10 +873,21 @@ nfocat() {
   done
 }
 
+# create a torrent using mktorrent or pmktorrent
+# torrent készítése mktorrent vagy pmktorrent-tel
 createtorrent() {
   local i
   for i in "$@"; do
-    mktorrent -l 24 "$i"
+    if command -v mktorrent > /dev/null 2>&1; then
+      mktorrent -l 24 "$i"
+    else
+      if command -v pmktorrent > /dev/null 2>&1; then
+        pmktorrent -l 24 "$i"
+      else
+        echo "Error: Neither mktorrent nor pmktorrent found. Cannot create a torrent." >&2
+        return 1
+      fi
+    fi
   done
 }
 
