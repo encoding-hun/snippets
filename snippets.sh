@@ -1066,6 +1066,11 @@ sc() {
   systemctl "$@"
 }
 
+jcu() {
+  local lines="${2:-100}"
+  journalctl --user-unit="$1" --no-pager -n "$lines"
+}
+
 rn() {
   if [ "$#" -lt 2 ]; then
     echo "Usage: \033[0;36mrn 's/from/to/' file(s)"; return 1
