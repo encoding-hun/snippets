@@ -999,7 +999,7 @@ dvmerge() {
 remount() {
   lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
   upper=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-  if [[ -d "/mnt/$lower"]]; then
+  if [[ -d "/mnt/$lower" ]]; then
     echo "Drive $upper is already mounted."
   else
     sudo umount "/mnt/$lower"
@@ -1105,14 +1105,14 @@ update_hola_proxy() {
   url="https://github.com/Snawoot/hola-proxy/releases/latest/download/hola-proxy.linux-amd64"
 
   if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
-    if [ -f "/usr/local/bin/hola-proxy" ]; then
-      sudo rm /usr/local/bin/hola-proxy
+    if [ -f "~/.local/bin/hola-proxy" ]; then
+      rm ~/.local/bin/hola-proxy
     fi
     sudo sh -c "curl -sL "$url" >> /usr/local/bin/hola-proxy"
     sudo chmod +x /usr/local/bin/hola-proxy
   else
-    if [ -f "~/.local/bin/hola-proxy" ]; then
-      rm ~/.local/bin/hola-proxy
+    if [ -f "/usr/local/bin/hola-proxy" ]; then
+      sudo rm /usr/local/bin/hola-proxy
     fi
     curl -sL "$url" >> ~/.local/bin/hola-proxy
     chmod +x ~/.local/bin/hola-proxy
