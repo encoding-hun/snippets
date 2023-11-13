@@ -999,9 +999,13 @@ dvmerge() {
 remount() {
   lower=$(echo "$1" | tr '[:upper:]' '[:lower:]')
   upper=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-  sudo umount "/mnt/$lower"
-  sudo mkdir -p "/mnt/$lower"
-  sudo mount -t drvfs "$upper:" "/mnt/$lower"
+  if [[ -d "/mnt/$lower"]]; then
+    echo "Drive $upper is already mounted."
+  else
+    sudo umount "/mnt/$lower"
+    sudo mkdir -p "/mnt/$lower"
+    sudo mount -t drvfs "$upper:" "/mnt/$lower"
+  fi
 }
 
 createicon() {
