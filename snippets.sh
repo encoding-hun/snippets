@@ -1105,13 +1105,13 @@ update_hola_proxy() {
   url="https://github.com/Snawoot/hola-proxy/releases/latest/download/hola-proxy.linux-amd64"
 
   if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
-    if [ "/usr/local/bin/hola-proxy" ]; then
+    if [ -e "/usr/local/bin/hola-proxy" ]; then
       sudo rm /usr/local/bin/hola-proxy
     fi
     sudo sh -c "curl -sL "$url" >> /usr/local/bin/hola-proxy"
     sudo chmod +x /usr/local/bin/hola-proxy
   else
-    if [ "~/.local/bin/hola-proxy" ]; then
+    if [ -e "~/.local/bin/hola-proxy" ]; then
       rm ~/.local/bin/hola-proxy
     fi
     curl -sL "$url" >> ~/.local/bin/hola-proxy
@@ -1119,6 +1119,60 @@ update_hola_proxy() {
   fi
 
   echo Successfully updated to $(hola-proxy -version)
+}
+
+# hola-proxy telepítése vagy frissítés
+# installing or updating hola-proxy
+update_opera_proxy() {
+  if [[ $1 == -* ]]; then
+    opt=$1
+    shift
+  fi
+
+  url="https://github.com/Snawoot/opera-proxy/releases/latest/download/opera-proxy.linux-amd64"
+
+  if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
+    if [ -e "/usr/local/bin/opera-proxy" ]; then
+      sudo rm /usr/local/bin/opera-proxy
+    fi
+    sudo sh -c "curl -sL "$url" >> /usr/local/bin/opera-proxy"
+    sudo chmod +x /usr/local/bin/opera-proxy
+  else
+    if [ -e "~/.local/bin/opera-proxy" ]; then
+      rm ~/.local/bin/opera-proxy
+    fi
+    curl -sL "$url" >> ~/.local/bin/opera-proxy
+    chmod +x ~/.local/bin/opera-proxy
+  fi
+
+  echo Successfully updated to $(opera-proxy -version)
+}
+
+# hola-proxy telepítése vagy frissítés
+# installing or updating hola-proxy
+update_windscribe_proxy() {
+  if [[ $1 == -* ]]; then
+    opt=$1
+    shift
+  fi
+
+  url="https://github.com/Snawoot/windscribe-proxy/releases/latest/download/windscribe-proxy.linux-amd64"
+
+  if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
+    if [ -e "/usr/local/bin/windscribe-proxy" ]; then
+      sudo rm /usr/local/bin/windscribe-proxy
+    fi
+    sudo sh -c "curl -sL "$url" >> /usr/local/bin/windscribe-proxy"
+    sudo chmod +x /usr/local/bin/windscribe-proxy
+  else
+    if [ -e "~/.local/bin/windscribe-proxy" ]; then
+      rm ~/.local/bin/windscribe-proxy
+    fi
+    curl -sL "$url" >> ~/.local/bin/windscribe-proxy
+    chmod +x ~/.local/bin/windscribe-proxy
+  fi
+
+  echo Successfully updated to $(windscribe-proxy -version)
 }
 
 # show ip address
