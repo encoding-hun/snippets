@@ -1022,7 +1022,7 @@ createicon() {
 # hdr10plus_tool frissítés
 # updating hdr10plus_tool
 update_hdr10plus_tool() {
-  architecture=$(uname -p)
+  architecture=$(uname -m)
   url=$(curl -s https://api.github.com/repos/quietvoid/hdr10plus_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("'$architecture'-unknown-linux-musl.tar.gz))') &&
   curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
   echo Update successful
@@ -1032,7 +1032,7 @@ update_hdr10plus_tool() {
 # dovi_tool frissítés
 # updating dovi_tool
 update_dovi_tool() {
-  architecture=$(uname -p)
+  architecture=$(uname -m)
   url=$(curl -s https://api.github.com/repos/quietvoid/dovi_tool/releases/latest | jq -r '.assets[] | .browser_download_url | select(endswith("'$architecture'-unknown-linux-musl.tar.gz"))') &&
   curl -sL "$url" | gzip -d | sudo tar --no-same-owner -C /usr/local/bin -xf - &&
   echo Update successful
