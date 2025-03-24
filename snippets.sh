@@ -720,12 +720,20 @@ update_deew() {
   pip install deew --upgrade
 }
 
-# install / update to the latest version
+# get update with git then install with poetry
 # telepítés / frissítés a legújabb verzióra
-update_vt() {
+update_with_poetry() {
   git pull
   git submodule update --init
   poetry install
+}
+
+# get update with git then install with pdm
+# telepítés / frissítés a legújabb verzióra
+update_with_pdm() {
+  git pull
+  git submodule update --init
+  pdm sync
 }
 
 # update outdated Python libraries
