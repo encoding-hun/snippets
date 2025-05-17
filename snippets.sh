@@ -736,6 +736,14 @@ update_with_pdm() {
   pdm sync
 }
 
+# get update with git then install with uv
+# telepítés / frissítés a legújabb verzióra
+update_with_uv() {
+  git pull
+  git submodule update --init
+  uv sync
+}
+
 # update outdated Python libraries
 # Python library-k frissítése
 update_libs() {
@@ -1205,4 +1213,26 @@ getsnippet() {
   else
     where "$1"
   fi
+}
+
+# upload files to buzzheavier
+# fájlok feltöltése buzzheavier-re
+buzzup() {
+  local name help res data_id
+
+  help="Usage: buzzup example.file example.file2"
+
+  if [[ $# -eq 0 ]]; then
+    echo "$help"
+    return 1
+  fi
+
+  for name in "$@"; do
+    res=$(curl -#o - -T "$name" "https://w.buzzheavier.com/$name")
+    data_id=$(echo $res | jq -r .data.id)
+    if [[ $(echo $res | jq -r .code) == 201 ]]
+      printf 'url: https://buzzheavier.com/%s\n' $data_id
+    if
+    echo $res | jq
+  done
 }
