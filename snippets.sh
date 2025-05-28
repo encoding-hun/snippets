@@ -741,7 +741,7 @@ update_with_pdm() {
 update_with_uv() {
   git pull
   git submodule update --init
-  uv sync
+  uv sync --frozen
 }
 
 # update outdated Python libraries
