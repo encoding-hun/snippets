@@ -82,22 +82,11 @@ aacenc() {
 # ffmpeg frissítés
 # updating ffmpeg
 update_ffmpeg() {
-  if [[ $1 == -* ]]; then
-    opt=$1
-    shift
-  fi
-
-  type=${1:-release} # release, git
-  if [[ $type == 'release' ]]; then
-    dir='releases'
+  local url='https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz'
+  if [[ $1 != -l && $1 != --local && $(sudo -n -l sh) ]]; then
+    curl -#L "$url" | sudo tar --no-same-owner -C /usr/local/bin -xvJf - --strip 2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'
   else
-    dir='builds'
-  fi
-
-  if [[ $opt != -l && $opt != --local && $(sudo -n -l sh) ]]; then
-    sudo sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C /usr/local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
-  else
-    sh -c "curl -# 'https://johnvansickle.com/ffmpeg/${dir}/ffmpeg-${type}-amd64-static.tar.xz' | tar -C ~/.local/bin -xvJf - --strip 1 --wildcards '*/ffmpeg' '*/ffprobe'"
+    curl -#L "$url" | tar -C ~/.local/bin -xvJf - --strip 2 --wildcards '*/bin/ffmpeg' '*/bin/ffprobe'
   fi
 }
 
